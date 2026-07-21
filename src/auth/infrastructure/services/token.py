@@ -1,10 +1,15 @@
+from __future__ import annotations
+
 import datetime
+from typing import TYPE_CHECKING
 
 import jwt
 
 from application.exceptions.user_exception import InvalidTokenError
 from application.services.token import TokenServiceJWTABC
-from infrastructure.config.settings import SettingsService
+
+if TYPE_CHECKING:
+    from infrastructure.config.settings import SettingsService
 
 
 class TokenServiceJWT(TokenServiceJWTABC):

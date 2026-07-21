@@ -25,7 +25,7 @@ class FakeCache:
 
 
 @pytest_asyncio.fixture
-async def client() -> AsyncClient:
+async def client(prepare_test_database) -> AsyncClient:
     from main import app
     from presentation.dependencies.container import container
 

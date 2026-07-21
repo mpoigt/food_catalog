@@ -42,7 +42,7 @@ async def _create_tables() -> None:
     await engine.dispose()
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 def prepare_test_database():
     asyncio.run(_create_database_if_missing())
     asyncio.run(_create_tables())
@@ -50,7 +50,7 @@ def prepare_test_database():
 
 
 @pytest_asyncio.fixture
-async def db_session() -> AsyncSession:
+async def db_session(prepare_test_database) -> AsyncSession:
     engine = create_async_engine(TEST_DB_URL)
     async with engine.connect() as conn:
         transaction = await conn.begin()
