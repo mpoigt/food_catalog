@@ -44,6 +44,8 @@ async def client(prepare_test_database) -> AsyncClient:
 
     container.session_factory.reset_override()
     container.cache_service.reset_override()
+    async with engine.begin() as conn:
+        await conn.execute(text("TRUNCATE TABLE users CASCADE"))
     await engine.dispose()
 
 

@@ -4,7 +4,6 @@ import os
 import asyncpg
 import pytest
 import pytest_asyncio
-from sqlalchemy import text
 from sqlalchemy.engine import make_url
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
@@ -58,7 +57,6 @@ async def db_session(prepare_test_database) -> AsyncSession:
             bind=conn, class_=AsyncSession, expire_on_commit=False
         )
         session = maker()
-        await session.execute(text("TRUNCATE TABLE users CASCADE"))
         try:
             yield session
         finally:

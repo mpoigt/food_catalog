@@ -5,6 +5,7 @@ from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from application.dto.user import CurrentUserDTO
+from domain.enums.token_type import TOKEN_TYPE_CLAIM, TokenType
 from application.exceptions.user_exception import (
     AccessDeniedError,
     InvalidTokenError,
@@ -28,7 +29,7 @@ async def get_current_user(
         raise InvalidTokenError("Missing bearer token")
 
     payload = token_service.decode_token(credentials.credentials)
-    if payload.get("token_type") != "access":
+    if payload.get(TOKEN_TYPE_CLAIM) != TokenType.ACCESS.value:
         raise InvalidTokenError("Not an access token")
 
     try:
