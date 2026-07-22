@@ -1,13 +1,13 @@
 import logging
 from uuid import UUID
 
-from application.dto.user import UserResponseDTO, UserUpdateAdminDTO
-from application.exceptions.user_exception import (
+from auth.application.dto.user import UserResponseDTO, UserUpdateAdminDTO
+from auth.application.exceptions.user_exception import (
     UserAlreadyExistsError,
     UserNotFoundError,
 )
-from application.services.hashing import PasswordHasherABC
-from application.repositories.uow import UnitOfWorkABC
+from auth.application.services.hashing import PasswordHasherABC
+from auth.application.repositories.uow import UnitOfWorkABC
 
 logger = logging.getLogger("auth")
 

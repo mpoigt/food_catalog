@@ -9,6 +9,6 @@ repos:
     hooks:
     -   id: mypy
         name: mypy (python)
-        args: [src/auth, --config-file=mypy.ini]
+        args: [src, --config-file=mypy.ini]
         additional_dependencies: [pytest==8.3.4]
         pass_filenames: false

@@ -2,11 +2,11 @@ import datetime
 import logging
 from uuid import uuid4
 
-from application.dto.user import UserCreateDTO, UserResponseDTO
-from application.exceptions.user_exception import UserAlreadyExistsError
-from application.services.hashing import PasswordHasherABC
-from application.repositories.uow import UnitOfWorkABC
-from domain.entities.user import User
+from auth.application.dto.user import UserCreateDTO, UserResponseDTO
+from auth.application.exceptions.user_exception import UserAlreadyExistsError
+from auth.application.services.hashing import PasswordHasherABC
+from auth.application.repositories.uow import UnitOfWorkABC
+from auth.domain.entities.user import User
 
 logger = logging.getLogger("auth")
 

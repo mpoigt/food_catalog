@@ -1,11 +1,11 @@
 import datetime
 
-from application.dto.token_pair import TokenPair
-from domain.enums.token_type import TOKEN_TYPE_CLAIM, TokenType
-from application.services.cache import CacheServiceABC
-from application.config.settings import SettingsServiceABC
-from application.services.token import TokenServiceJWTABC
-from application.exceptions.user_exception import InvalidTokenError
+from auth.application.dto.token_pair import TokenPair
+from auth.domain.enums.token_type import TOKEN_TYPE_CLAIM, TokenType
+from auth.application.services.cache import CacheServiceABC
+from auth.application.config.settings import SettingsServiceABC
+from auth.application.services.token import TokenServiceJWTABC
+from auth.application.exceptions.user_exception import InvalidTokenError
 
 
 class RefreshJWTTokensUseCase:

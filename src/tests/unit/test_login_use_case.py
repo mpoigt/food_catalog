@@ -3,14 +3,14 @@ from types import SimpleNamespace
 
 import pytest
 
-from application.exceptions.user_exception import (
+from auth.application.exceptions.user_exception import (
     InvalidPasswordError,
     UserBlockedError,
     UserNotFoundError,
 )
-from application.use_cases.user.login_user import LoginUserUseCase
-from domain.entities.user import User
-from domain.enums.role import Role
+from auth.application.use_cases.user.login_user import LoginUserUseCase
+from auth.domain.entities.user import User
+from auth.domain.enums.role import Role
 
 
 class _FakeUsers:

@@ -7,7 +7,12 @@ import pytest_asyncio
 from sqlalchemy.engine import make_url
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from infrastructure.db.models import Base
+from auth.infrastructure.db import models as auth_models
+from catalog.infrastructure.db import models as catalog_models
+
+auth_models.register()
+catalog_models.register()
+Base = auth_models.Base
 
 TEST_DB_URL = os.getenv(
     "TEST_DB_URL",

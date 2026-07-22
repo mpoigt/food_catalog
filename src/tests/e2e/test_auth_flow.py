@@ -39,7 +39,7 @@ async def test_login_wrong_password(client):
 async def test_access_token_rejected_on_refresh(client):
     tokens = await _register_and_login(client, "a@example.com")
     r = await client.post(
-        "/tokens/refresh", json={"refreshToken": tokens["access_token"]}
+        "/tokens/refresh", json={"refresh_token": tokens["access_token"]}
     )
     assert r.status_code == 401
 
@@ -48,10 +48,10 @@ async def test_refresh_rotation_and_revocation(client):
     tokens = await _register_and_login(client, "b@example.com")
     refresh = tokens["refresh_token"]
 
-    first = await client.post("/tokens/refresh", json={"refreshToken": refresh})
+    first = await client.post("/tokens/refresh", json={"refresh_token": refresh})
     assert first.status_code == 200
 
-    reused = await client.post("/tokens/refresh", json={"refreshToken": refresh})
+    reused = await client.post("/tokens/refresh", json={"refresh_token": refresh})
     assert reused.status_code == 401
 
 

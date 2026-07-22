@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from application.repositories.user_repository import UserRepositoryABC
+from auth.application.repositories.user_repository import UserRepositoryABC
 
 
 class UnitOfWorkABC(ABC):

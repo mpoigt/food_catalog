@@ -1,12 +1,12 @@
 import logging
 
-from application.dto.token_pair import TokenPair
-from domain.enums.token_type import TOKEN_TYPE_CLAIM, TokenType
-from application.services.hashing import PasswordHasherABC
-from application.config.settings import SettingsServiceABC
-from application.services.token import TokenServiceJWTABC
-from application.repositories.uow import UnitOfWorkABC
-from application.exceptions.user_exception import (
+from auth.application.dto.token_pair import TokenPair
+from auth.domain.enums.token_type import TOKEN_TYPE_CLAIM, TokenType
+from auth.application.services.hashing import PasswordHasherABC
+from auth.application.config.settings import SettingsServiceABC
+from auth.application.services.token import TokenServiceJWTABC
+from auth.application.repositories.uow import UnitOfWorkABC
+from auth.application.exceptions.user_exception import (
     InvalidPasswordError,
     UserBlockedError,
     UserNotFoundError,

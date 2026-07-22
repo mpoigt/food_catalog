@@ -2,8 +2,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from application.exceptions.user_exception import InvalidTokenError
-from infrastructure.services.token import TokenServiceJWT
+from auth.application.exceptions.user_exception import InvalidTokenError
+from auth.infrastructure.services.token import TokenServiceJWT
 
 
 def _service() -> TokenServiceJWT:

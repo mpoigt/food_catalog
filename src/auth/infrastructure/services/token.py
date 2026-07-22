@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING
 
 import jwt
 
-from application.exceptions.user_exception import InvalidTokenError
-from application.services.token import TokenServiceJWTABC
+from auth.application.exceptions.user_exception import InvalidTokenError
+from auth.application.services.token import TokenServiceJWTABC
 
 if TYPE_CHECKING:
-    from infrastructure.config.settings import SettingsService
+    from auth.infrastructure.config.settings import SettingsService
 
 
 class TokenServiceJWT(TokenServiceJWTABC):

@@ -1,4 +1,4 @@
-from infrastructure.services.hashing import PasswordHasher
+from auth.infrastructure.services.hashing import PasswordHasher
 
 
 def test_hash_is_not_plaintext():

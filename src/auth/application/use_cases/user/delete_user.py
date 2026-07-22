@@ -1,8 +1,8 @@
 import logging
 from uuid import UUID
 
-from application.exceptions.user_exception import UserNotFoundError
-from application.repositories.uow import UnitOfWorkABC
+from auth.application.exceptions.user_exception import UserNotFoundError
+from auth.application.repositories.uow import UnitOfWorkABC
 
 logger = logging.getLogger("auth")
 

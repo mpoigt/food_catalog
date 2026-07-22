@@ -1,9 +1,9 @@
 import datetime
 import uuid
 
-from domain.entities.user import User
-from domain.enums.role import Role
-from infrastructure.repositories.user_repository import SQLAlchemyUserRepository
+from auth.domain.entities.user import User
+from auth.domain.enums.role import Role
+from auth.infrastructure.repositories.user_repository import SQLAlchemyUserRepository
 
 
 def _user(**overrides) -> User:

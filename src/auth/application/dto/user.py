@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from domain.enums.role import Role
+from auth.domain.enums.role import Role
 
 
 @dataclass
