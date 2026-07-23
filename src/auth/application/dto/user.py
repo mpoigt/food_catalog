@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from uuid import UUID
 
+from auth.domain.entities.user import User
 from auth.domain.enums.role import Role
 
 
@@ -19,6 +20,16 @@ class UserResponseDTO:
     email: str
     role: Role
     is_blocked: bool
+
+    @classmethod
+    def from_entity(cls, user: User) -> "UserResponseDTO":
+        return cls(
+            id=user.id,
+            username=user.username,
+            email=user.email,
+            role=user.role,
+            is_blocked=user.is_blocked,
+        )
 
 
 @dataclass

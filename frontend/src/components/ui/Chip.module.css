@@ -1,0 +1,25 @@
+.chip {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 8px 20px;
+  border-radius: var(--radius-pill);
+}
+
+.dark {
+  background: var(--brown);
+  color: #fff;
+}
+
+.pink {
+  background: transparent;
+  color: var(--pink);
+}
+
+.yellow {
+  background: var(--yellow);
+  color: var(--brown);
+}

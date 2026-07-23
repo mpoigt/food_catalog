@@ -22,14 +22,5 @@ class ListUsersUseCase:
                 order_by=order_by,
             )
 
-        items = [
-            UserResponseDTO(
-                id=user.id,
-                username=user.username,
-                email=user.email,
-                role=user.role,
-                is_blocked=user.is_blocked,
-            )
-            for user in users
-        ]
+        items = [UserResponseDTO.from_entity(user) for user in users]
         return items, total

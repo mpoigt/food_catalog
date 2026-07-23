@@ -1,0 +1,44 @@
+import { CATEGORY_ICON } from "../../../lib/constants";
+import type { Product } from "../../../types/catalog";
+import { PriceTag } from "./PriceTag";
+import styles from "./ProductCard.module.css";
+
+type Props = {
+  product: Product;
+};
+
+export function ProductCard({ product }: Props) {
+  return (
+    <article className={styles.card}>
+      <div className={styles.thumb}>
+        {product.image ? (
+          <img className={styles.image} src={product.image} alt={product.name} />
+        ) : (
+          <span className={styles.emoji}>
+            {CATEGORY_ICON[product.categoryName] ?? "🍽️"}
+          </span>
+        )}
+        {product.noteCommon && (
+          <span className={styles.sticker}>{product.noteCommon}</span>
+        )}
+      </div>
+
+      <div className={styles.body}>
+        <span className={styles.category}>{product.categoryName}</span>
+        <h3 className={styles.name}>{product.name}</h3>
+        <p className={styles.description}>{product.description}</p>
+
+        {product.noteSpecial && (
+          <p className={styles.special}>{product.noteSpecial}</p>
+        )}
+
+        <div className={styles.footer}>
+          <PriceTag productId={product.id} price={product.price} />
+          <button className={styles.plus} type="button" aria-label="Добавить">
+            +
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+}

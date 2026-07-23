@@ -1,0 +1,27 @@
+.page {
+  display: flex;
+  flex-direction: column;
+}
+
+.section {
+  padding-bottom: var(--space-10);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.allLink {
+  font-size: 15px;
+  color: var(--brown-soft);
+  transition: color 0.15s ease;
+}
+
+.allLink:hover {
+  color: var(--pink);
+}

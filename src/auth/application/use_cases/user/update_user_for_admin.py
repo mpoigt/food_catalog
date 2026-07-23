@@ -53,10 +53,4 @@ class UpdateUserByAdminUseCase:
                 "password_changed": data.password is not None,
             },
         )
-        return UserResponseDTO(
-            id=updated.id,
-            username=updated.username,
-            email=updated.email,
-            role=updated.role,
-            is_blocked=updated.is_blocked,
-        )
+        return UserResponseDTO.from_entity(updated)

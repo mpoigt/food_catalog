@@ -39,10 +39,4 @@ class CreateUserUseCase:
         logger.info(
             "user_created", extra={"user_id": str(saved.id), "role": saved.role.value}
         )
-        return UserResponseDTO(
-            id=saved.id,
-            username=saved.username,
-            email=saved.email,
-            role=saved.role,
-            is_blocked=saved.is_blocked,
-        )
+        return UserResponseDTO.from_entity(saved)
