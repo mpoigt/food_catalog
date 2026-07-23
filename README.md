@@ -18,15 +18,22 @@ FastAPI · SQLAlchemy 2 (async) · Alembic · PostgreSQL · Redis · dependency-
 
 ## Архитектура
 
+Модульный монолит с общим ядром. Каждый модуль внутри разбит на слои чистой архитектуры:
+
 ```
-domain/          сущности и enum-ы (без внешних зависимостей)
-application/      use-cases, порты (repositories/services/config), DTO, исключения
-infrastructure/   реализации портов: БД (Data Mapper + UnitOfWork), Redis, JWT, bcrypt, config
-presentation/     FastAPI-роутеры, схемы, DI-контейнер, зависимости авторизации
+src/
+  core/       общее ядро: settings, Base/engine/session, BaseUnitOfWork, logging, exceptions, DI
+  auth/       модуль аутентификации/авторизации
+  catalog/    модуль каталога продуктов
+    domain/          сущности и enum-ы (без внешних зависимостей)
+    application/     use-cases, порты (repositories/services/config), DTO, исключения
+    infrastructure/  реализации портов: БД (Data Mapper + UnitOfWork), Redis, JWT, bcrypt, config
+    presentation/    FastAPI-роутеры, схемы, DI-контейнер, зависимости авторизации
+  main.py     композиция: CoreContainer → контейнеры модулей → роутеры
 ```
 
-Зависимости направлены строго внутрь: `domain` ни от чего не зависит, `application` знает только свои
-порты, конкретные реализации живут в `infrastructure`/`presentation`.
+Зависимости направлены строго внутрь: `core` не знает о модулях; `domain` ни от чего не зависит,
+`application` знает только свои порты, конкретные реализации живут в `infrastructure`/`presentation`.
 
 ## Быстрый старт (Docker)
 
@@ -43,20 +50,21 @@ docker compose up -d --build         # поднимает PostgreSQL + Redis + �
 Регистрация создаёт роль `user`. Чтобы завести админа, выполните разово:
 
 ```bash
-docker compose exec auth python -m scripts.seed_admin
+docker compose exec auth python -m auth.scripts.seed_admin
 ```
 
 (или создайте пользователя и вручную выставьте ему `role = 'ADMIN'` в БД).
 
 ## Локальная разработка
 
+Все команды выполняются **из корня проекта** (там лежит `.env`).
+
 ```bash
 poetry install
 cp .env.example .env
 # нужны запущенные PostgreSQL и Redis (docker compose up -d db redis)
-cd src/auth
-DB_URL=postgresql+asyncpg://postgres:postgres@localhost:5433/auth_db PYTHONPATH=. poetry run alembic upgrade head
-PYTHONPATH=. poetry run uvicorn main:app --reload
+DB_URL=postgresql+asyncpg://postgres:postgres@localhost:5433/auth_db PYTHONPATH=src poetry run alembic -c src/alembic.ini upgrade head
+PYTHONPATH=src poetry run uvicorn main:app --reload
 ```
 
 ## Тесты

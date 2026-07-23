@@ -1,10 +1,11 @@
 import datetime
 
-from application.dto.token_pair import TokenPair
-from application.services.cache import CacheServiceABC
-from application.config.settings import SettingsServiceABC
-from application.services.token import TokenServiceJWTABC
-from application.exceptions.user_exception import InvalidTokenError
+from auth.application.dto.token_pair import TokenPair
+from auth.domain.enums.token_type import TOKEN_TYPE_CLAIM, TokenType
+from auth.application.services.cache import CacheServiceABC
+from auth.application.config.settings import SettingsServiceABC
+from auth.application.services.token import TokenServiceJWTABC
+from auth.application.exceptions.user_exception import InvalidTokenError
 
 
 class RefreshJWTTokensUseCase:
@@ -23,7 +24,7 @@ class RefreshJWTTokensUseCase:
             raise InvalidTokenError("Token revoked")
 
         payload = self._token_service.decode_token(refresh_token)
-        if payload.get("token_type") != "refresh":
+        if payload.get(TOKEN_TYPE_CLAIM) != TokenType.REFRESH.value:
             raise InvalidTokenError("Not a refresh token")
 
         identity = {
@@ -33,10 +34,12 @@ class RefreshJWTTokensUseCase:
             "role": payload["role"],
         }
         access_token = self._token_service.generate_token(
-            {**identity, "token_type": "access"}, self._settings.access_token_expire
+            {**identity, TOKEN_TYPE_CLAIM: TokenType.ACCESS.value},
+            self._settings.access_token_expire,
         )
         refresh = self._token_service.generate_token(
-            {**identity, "token_type": "refresh"}, self._settings.refresh_token_expire
+            {**identity, TOKEN_TYPE_CLAIM: TokenType.REFRESH.value},
+            self._settings.refresh_token_expire,
         )
 
         now = int(datetime.datetime.now(datetime.timezone.utc).timestamp())

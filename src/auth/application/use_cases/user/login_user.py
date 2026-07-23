@@ -1,11 +1,12 @@
 import logging
 
-from application.dto.token_pair import TokenPair
-from application.services.hashing import PasswordHasherABC
-from application.config.settings import SettingsServiceABC
-from application.services.token import TokenServiceJWTABC
-from application.repositories.uow import UnitOfWorkABC
-from application.exceptions.user_exception import (
+from auth.application.dto.token_pair import TokenPair
+from auth.domain.enums.token_type import TOKEN_TYPE_CLAIM, TokenType
+from auth.application.services.hashing import PasswordHasherABC
+from auth.application.config.settings import SettingsServiceABC
+from auth.application.services.token import TokenServiceJWTABC
+from auth.application.repositories.uow import UnitOfWorkABC
+from auth.application.exceptions.user_exception import (
     InvalidPasswordError,
     UserBlockedError,
     UserNotFoundError,
@@ -52,10 +53,12 @@ class LoginUserUseCase:
             "role": user.role.value,
         }
         access_token = self._token_service.generate_token(
-            {**identity, "token_type": "access"}, self._settings.access_token_expire
+            {**identity, TOKEN_TYPE_CLAIM: TokenType.ACCESS.value},
+            self._settings.access_token_expire,
         )
         refresh_token = self._token_service.generate_token(
-            {**identity, "token_type": "refresh"}, self._settings.refresh_token_expire
+            {**identity, TOKEN_TYPE_CLAIM: TokenType.REFRESH.value},
+            self._settings.refresh_token_expire,
         )
         logger.info("user_login", extra={"user_id": str(user.id)})
         return TokenPair(access_token=access_token, refresh_token=refresh_token)

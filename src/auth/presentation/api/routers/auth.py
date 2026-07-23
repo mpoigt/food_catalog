@@ -1,17 +1,17 @@
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, status
 
-from application.dto.user import UserCreateDTO
-from application.use_cases.user.create_user import CreateUserUseCase
-from application.use_cases.user.login_user import LoginUserUseCase
-from domain.enums.role import Role
-from presentation.api.schemas.token_pair import TokenPairSchema
-from presentation.api.schemas.user import (
+from auth.application.dto.user import UserCreateDTO
+from auth.application.use_cases.user.create_user import CreateUserUseCase
+from auth.application.use_cases.user.login_user import LoginUserUseCase
+from auth.domain.enums.role import Role
+from auth.presentation.api.schemas.token_pair import TokenPairSchema
+from auth.presentation.api.schemas.user import (
     LoginSchema,
     RegisterSchema,
     UserResponseSchema,
 )
-from presentation.dependencies.container import Container
+from auth.presentation.dependencies.container import AuthContainer
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -24,7 +24,7 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 @inject
 async def register(
     data: RegisterSchema,
-    use_case: CreateUserUseCase = Depends(Provide[Container.create_user_use_case]),
+    use_case: CreateUserUseCase = Depends(Provide[AuthContainer.create_user_use_case]),
 ) -> UserResponseSchema:
     dto = await use_case(
         UserCreateDTO(
@@ -41,7 +41,7 @@ async def register(
 @inject
 async def login(
     data: LoginSchema,
-    use_case: LoginUserUseCase = Depends(Provide[Container.login_user_use_case]),
+    use_case: LoginUserUseCase = Depends(Provide[AuthContainer.login_user_use_case]),
 ) -> TokenPairSchema:
     tokens = await use_case(email=data.email, password=data.password)
     return TokenPairSchema(

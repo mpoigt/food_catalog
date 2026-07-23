@@ -2,7 +2,7 @@ FROM python:3.12-slim
 
 ENV PYTHONUNBUFFERED=1 \
     POETRY_VIRTUALENVS_CREATE=false \
-    PYTHONPATH=/app/src/auth 
+    PYTHONPATH=/app/src
 
 RUN apt-get update && apt-get install -y \
     gcc \

@@ -3,9 +3,13 @@ import datetime
 import os
 from uuid import uuid4
 
-from domain.entities.user import User
-from domain.enums.role import Role
-from presentation.dependencies.container import container
+from core.container import CoreContainer
+
+from auth.domain.entities.user import User
+from auth.domain.enums.role import Role
+from auth.presentation.dependencies.container import container
+
+container.session_factory.override(CoreContainer().session_factory)
 
 ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@example.com")

@@ -1,44 +1,34 @@
 from dependency_injector import containers, providers
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from application.use_cases.token.refreshing import RefreshJWTTokensUseCase
-from application.use_cases.user.create_user import CreateUserUseCase
-from application.use_cases.user.delete_user import DeleteUserUseCase
-from application.use_cases.user.get_user_by_id import GetUserUseCase
-from application.use_cases.user.list_user import ListUsersUseCase
-from application.use_cases.user.login_user import LoginUserUseCase
-from application.use_cases.user.update_user_for_admin import UpdateUserByAdminUseCase
-from infrastructure.db.uow.uow import UnitOfWork
-from infrastructure.services.hashing import PasswordHasher
-from infrastructure.services.cache import CacheService
-from infrastructure.services.token import TokenServiceJWT
-from infrastructure.config.settings import SettingsService
+from auth.application.use_cases.token.refreshing import RefreshJWTTokensUseCase
+from auth.application.use_cases.user.create_user import CreateUserUseCase
+from auth.application.use_cases.user.delete_user import DeleteUserUseCase
+from auth.application.use_cases.user.get_user_by_id import GetUserUseCase
+from auth.application.use_cases.user.list_user import ListUsersUseCase
+from auth.application.use_cases.user.login_user import LoginUserUseCase
+from auth.application.use_cases.user.update_user_for_admin import UpdateUserByAdminUseCase
+from auth.infrastructure.config.settings import SettingsService
+from auth.infrastructure.db.uow.uow import AuthUnitOfWork
+from auth.infrastructure.services.cache import CacheService
+from auth.infrastructure.services.hashing import PasswordHasher
+from auth.infrastructure.services.token import TokenServiceJWT
 
 
-class Container(containers.DeclarativeContainer):
+class AuthContainer(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(
         modules=[
-            "presentation.api.routers.auth",
-            "presentation.api.routers.user",
-            "presentation.api.routers.token",
-            "presentation.dependencies.auth",
+            "auth.presentation.api.routers.auth",
+            "auth.presentation.api.routers.user",
+            "auth.presentation.api.routers.token",
+            "auth.presentation.dependencies.auth",
         ],
     )
 
+    session_factory = providers.Dependency()
+
     settings = providers.Singleton(SettingsService)
 
-    engine = providers.Singleton(
-        create_async_engine, settings.provided.db_settings.db_url
-    )
-
-    session_factory = providers.Singleton(
-        async_sessionmaker,
-        bind=engine,
-        class_=AsyncSession,
-        expire_on_commit=False,
-    )
-
-    uow = providers.Factory(UnitOfWork, session_factory=session_factory)
+    uow = providers.Factory(AuthUnitOfWork, session_factory=session_factory)
 
     password_hasher = providers.Factory(PasswordHasher)
     token_service_jwt = providers.Factory(TokenServiceJWT, settings=settings)
@@ -68,4 +58,4 @@ class Container(containers.DeclarativeContainer):
     )
 
 
-container = Container()
+container = AuthContainer()

@@ -2,7 +2,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-from domain.enums.role import Role
+from auth.domain.enums.role import Role
 
 
 class RegisterSchema(BaseModel):

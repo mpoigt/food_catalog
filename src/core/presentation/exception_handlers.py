@@ -3,18 +3,19 @@ import logging
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
-from application.exceptions.base_exception import BaseAppException
-from presentation.api.exceptions.constants import EXCEPTION_STATUS_MAP
+from core.exceptions.base import BaseAppException
 
 logger = logging.getLogger("api")
 
+ExceptionStatusMap = dict[type[BaseAppException], int]
 
-def init_exceptions_handlers(app: FastAPI) -> None:
+
+def init_exception_handlers(app: FastAPI, status_map: ExceptionStatusMap) -> None:
     @app.exception_handler(BaseAppException)
     async def handle_app_exception(
         request: Request, exc: BaseAppException
     ) -> JSONResponse:
-        status_code = EXCEPTION_STATUS_MAP.get(type(exc), status.HTTP_400_BAD_REQUEST)
+        status_code = status_map.get(type(exc), status.HTTP_400_BAD_REQUEST)
         logger.warning(
             "app_exception",
             extra={

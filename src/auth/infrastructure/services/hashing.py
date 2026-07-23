@@ -1,6 +1,6 @@
 import bcrypt
 
-from application.services.hashing import PasswordHasherABC
+from auth.application.services.hashing import PasswordHasherABC
 
 
 class PasswordHasher(PasswordHasherABC):

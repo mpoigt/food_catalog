@@ -4,11 +4,15 @@ import os
 import asyncpg
 import pytest
 import pytest_asyncio
-from sqlalchemy import text
 from sqlalchemy.engine import make_url
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from infrastructure.db.models import Base
+from auth.infrastructure.db import models as auth_models
+from catalog.infrastructure.db import models as catalog_models
+
+auth_models.register()
+catalog_models.register()
+Base = auth_models.Base
 
 TEST_DB_URL = os.getenv(
     "TEST_DB_URL",
@@ -58,7 +62,6 @@ async def db_session(prepare_test_database) -> AsyncSession:
             bind=conn, class_=AsyncSession, expire_on_commit=False
         )
         session = maker()
-        await session.execute(text("TRUNCATE TABLE users CASCADE"))
         try:
             yield session
         finally:

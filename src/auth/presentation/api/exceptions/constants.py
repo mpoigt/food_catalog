@@ -1,7 +1,7 @@
 from fastapi import status
 
-from application.exceptions.base_exception import BaseAppException
-from application.exceptions.user_exception import (
+from core.exceptions.base import BaseAppException
+from auth.application.exceptions.user_exception import (
     AccessDeniedError,
     InvalidPasswordError,
     InvalidTokenError,

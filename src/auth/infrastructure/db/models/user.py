@@ -7,8 +7,8 @@ from sqlalchemy import String, func
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
-from domain.enums.role import Role
-from infrastructure.db import models
+from auth.domain.enums.role import Role
+from auth.infrastructure.db import models
 
 
 class UserDB(models.Base):

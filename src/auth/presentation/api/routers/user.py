@@ -3,21 +3,21 @@ from uuid import UUID
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Path, Query, status
 
-from application.dto.user import UserCreateDTO, UserUpdateAdminDTO
-from application.use_cases.user.create_user import CreateUserUseCase
-from application.use_cases.user.delete_user import DeleteUserUseCase
-from application.use_cases.user.get_user_by_id import GetUserUseCase
-from application.use_cases.user.list_user import ListUsersUseCase
-from application.use_cases.user.update_user_for_admin import UpdateUserByAdminUseCase
-from domain.enums.role import Role
-from presentation.api.schemas.user import (
+from auth.application.dto.user import UserCreateDTO, UserUpdateAdminDTO
+from auth.application.use_cases.user.create_user import CreateUserUseCase
+from auth.application.use_cases.user.delete_user import DeleteUserUseCase
+from auth.application.use_cases.user.get_user_by_id import GetUserUseCase
+from auth.application.use_cases.user.list_user import ListUsersUseCase
+from auth.application.use_cases.user.update_user_for_admin import UpdateUserByAdminUseCase
+from auth.domain.enums.role import Role
+from auth.presentation.api.schemas.user import (
     AdminCreateUserSchema,
     PaginatedUsersSchema,
     UserResponseSchema,
     UserUpdateAdminSchema,
 )
-from presentation.dependencies.auth import require_roles
-from presentation.dependencies.container import Container
+from auth.presentation.dependencies.auth import require_roles
+from auth.presentation.dependencies.container import AuthContainer
 
 router = APIRouter(
     prefix="/users",
@@ -33,7 +33,7 @@ async def list_users(
     limit: int = Query(30, ge=1, le=100),
     sort_by: str | None = Query(None),
     order_by: str = Query("asc", pattern=r"^(asc|desc)$"),
-    use_case: ListUsersUseCase = Depends(Provide[Container.list_users_use_case]),
+    use_case: ListUsersUseCase = Depends(Provide[AuthContainer.list_users_use_case]),
 ) -> PaginatedUsersSchema:
     items, total = await use_case(
         page=page, limit=limit, sort_by=sort_by, order_by=order_by
@@ -52,7 +52,7 @@ async def list_users(
 @inject
 async def create_user(
     data: AdminCreateUserSchema,
-    use_case: CreateUserUseCase = Depends(Provide[Container.create_user_use_case]),
+    use_case: CreateUserUseCase = Depends(Provide[AuthContainer.create_user_use_case]),
 ) -> UserResponseSchema:
     dto = await use_case(
         UserCreateDTO(
@@ -69,7 +69,7 @@ async def create_user(
 @inject
 async def get_user(
     user_id: UUID = Path(...),
-    use_case: GetUserUseCase = Depends(Provide[Container.get_user_use_case]),
+    use_case: GetUserUseCase = Depends(Provide[AuthContainer.get_user_use_case]),
 ) -> UserResponseSchema:
     dto = await use_case(user_id)
     return UserResponseSchema.model_validate(dto)
@@ -81,7 +81,7 @@ async def update_user(
     data: UserUpdateAdminSchema,
     user_id: UUID = Path(...),
     use_case: UpdateUserByAdminUseCase = Depends(
-        Provide[Container.update_user_admin_use_case]
+        Provide[AuthContainer.update_user_admin_use_case]
     ),
 ) -> UserResponseSchema:
     dto = await use_case(
@@ -101,6 +101,6 @@ async def update_user(
 @inject
 async def delete_user(
     user_id: UUID = Path(...),
-    use_case: DeleteUserUseCase = Depends(Provide[Container.delete_user_use_case]),
+    use_case: DeleteUserUseCase = Depends(Provide[AuthContainer.delete_user_use_case]),
 ) -> None:
     await use_case(user_id)

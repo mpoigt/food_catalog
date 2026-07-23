@@ -1,5 +1,5 @@
-from application.dto.user import UserResponseDTO
-from application.repositories.uow import UnitOfWorkABC
+from auth.application.dto.user import UserResponseDTO
+from auth.application.repositories.uow import UnitOfWorkABC
 
 
 class ListUsersUseCase:

@@ -1,7 +1,7 @@
 from redis.asyncio import Redis  # type: ignore[import-untyped]
 
-from application.services.cache import CacheServiceABC
-from infrastructure.config.settings import settings
+from auth.application.services.cache import CacheServiceABC
+from auth.infrastructure.config.settings import settings
 
 
 class CacheService(CacheServiceABC):
@@ -13,7 +13,7 @@ class CacheService(CacheServiceABC):
         )
 
     async def add(self, jwt: str, expire: int) -> None:
-        await self._redis.setex(jwt, time=expire, value="1")
+        await self._redis.setex(jwt, time=expire, value="67")
 
     async def exists(self, jwt: str) -> bool:
         return await self._redis.exists(jwt) == 1

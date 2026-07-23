@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from application.config.settings import SettingsServiceABC
+from auth.application.config.settings import SettingsServiceABC
+from core.config.settings import DatabaseSettings, RedisSettings
 
 _ENV = SettingsConfigDict(env_file=".env", extra="ignore")
 
@@ -12,25 +13,6 @@ class JWTTokensSettings(BaseSettings):
     refresh_token_expire: int
     jwt_hashing: str
     token_secret_key: str
-
-
-class DatabaseSettings(BaseSettings):
-    model_config = _ENV
-
-    db_url: str
-    test_db_url: str
-
-
-class RedisSettings(BaseSettings):
-    model_config = _ENV
-
-    host: str
-    port: int
-    db: int
-
-    @property
-    def redis_url(self) -> str:
-        return f"redis://{self.host}:{self.port}/{self.db}"
 
 
 class SettingsService(SettingsServiceABC):

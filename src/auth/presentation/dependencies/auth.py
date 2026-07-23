@@ -4,16 +4,17 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from application.dto.user import CurrentUserDTO
-from application.exceptions.user_exception import (
+from auth.application.dto.user import CurrentUserDTO
+from auth.domain.enums.token_type import TOKEN_TYPE_CLAIM, TokenType
+from auth.application.exceptions.user_exception import (
     AccessDeniedError,
     InvalidTokenError,
     UserBlockedError,
 )
-from application.repositories.uow import UnitOfWorkABC
-from application.services.token import TokenServiceJWTABC
-from domain.enums.role import Role
-from presentation.dependencies.container import Container
+from auth.application.repositories.uow import UnitOfWorkABC
+from auth.application.services.token import TokenServiceJWTABC
+from auth.domain.enums.role import Role
+from auth.presentation.dependencies.container import AuthContainer
 
 _bearer = HTTPBearer(auto_error=False)
 
@@ -21,14 +22,14 @@ _bearer = HTTPBearer(auto_error=False)
 @inject
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials | None = Depends(_bearer),
-    token_service: TokenServiceJWTABC = Depends(Provide[Container.token_service_jwt]),
-    uow: UnitOfWorkABC = Depends(Provide[Container.uow]),
+    token_service: TokenServiceJWTABC = Depends(Provide[AuthContainer.token_service_jwt]),
+    uow: UnitOfWorkABC = Depends(Provide[AuthContainer.uow]),
 ) -> CurrentUserDTO:
     if credentials is None:
         raise InvalidTokenError("Missing bearer token")
 
     payload = token_service.decode_token(credentials.credentials)
-    if payload.get("token_type") != "access":
+    if payload.get(TOKEN_TYPE_CLAIM) != TokenType.ACCESS.value:
         raise InvalidTokenError("Not an access token")
 
     try:

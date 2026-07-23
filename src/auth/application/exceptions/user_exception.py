@@ -1,4 +1,4 @@
-from application.exceptions.base_exception import BaseAppException
+from core.exceptions.base import BaseAppException
 
 
 class UserNotFoundError(BaseAppException):
