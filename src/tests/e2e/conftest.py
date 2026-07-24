@@ -37,9 +37,11 @@ async def _truncate(engine) -> None:
 
 @pytest_asyncio.fixture
 async def client(prepare_test_database) -> AsyncClient:
-    from main import app
     from auth.presentation.dependencies.container import container as auth_container
-    from catalog.presentation.dependencies.container import container as catalog_container
+    from catalog.presentation.dependencies.container import (
+        container as catalog_container,
+    )
+    from main import app
 
     engine = create_async_engine(TEST_DB_URL)
     maker = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)

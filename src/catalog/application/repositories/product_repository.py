@@ -1,7 +1,14 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from uuid import UUID
 
 from catalog.domain.entities.product import Product
+
+
+@dataclass
+class ProductListItem:
+    product: Product
+    category_name: str
 
 
 class ProductRepositoryABC(ABC):
@@ -29,4 +36,4 @@ class ProductRepositoryABC(ABC):
         category_id: UUID | None,
         sort_by: str | None,
         order_by: str,
-    ) -> tuple[list[Product], int]: ...
+    ) -> tuple[list[ProductListItem], int]: ...

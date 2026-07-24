@@ -19,7 +19,7 @@ class CreateCategoryUseCase:
             if await uow.categories.is_name_exists(data.name):
                 raise CategoryAlreadyExistsError(data.name)
 
-            now = datetime.datetime.now(datetime.timezone.utc)
+            now = datetime.datetime.now(datetime.UTC)
             category = Category(
                 id=uuid4(),
                 name=data.name,

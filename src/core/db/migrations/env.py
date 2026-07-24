@@ -6,9 +6,9 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+import auth.infrastructure.db.models  # noqa: F401
+import catalog.infrastructure.db.models  # noqa: F401
 from core.db.base import Base
-from auth.infrastructure.db import models as auth_models
-from catalog.infrastructure.db import models as catalog_models
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -23,8 +23,6 @@ config = context.config
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-auth_models.register()
-catalog_models.register()
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

@@ -1,14 +1,15 @@
 from fastapi import status
 
-from core.exceptions.base import BaseAppException
 from auth.application.exceptions.user_exception import (
     AccessDeniedError,
     InvalidPasswordError,
     InvalidTokenError,
+    SelfActionForbiddenError,
     UserAlreadyExistsError,
     UserBlockedError,
     UserNotFoundError,
 )
+from core.exceptions.base import BaseAppException
 
 EXCEPTION_STATUS_MAP: dict[type[BaseAppException], int] = {
     UserNotFoundError: status.HTTP_404_NOT_FOUND,
@@ -17,4 +18,5 @@ EXCEPTION_STATUS_MAP: dict[type[BaseAppException], int] = {
     InvalidTokenError: status.HTTP_401_UNAUTHORIZED,
     UserBlockedError: status.HTTP_403_FORBIDDEN,
     AccessDeniedError: status.HTTP_403_FORBIDDEN,
+    SelfActionForbiddenError: status.HTTP_403_FORBIDDEN,
 }

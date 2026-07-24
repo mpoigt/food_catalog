@@ -1,7 +1,10 @@
 import logging
 from uuid import UUID
 
-from auth.application.exceptions.user_exception import UserNotFoundError
+from auth.application.exceptions.user_exception import (
+    SelfActionForbiddenError,
+    UserNotFoundError,
+)
 from auth.application.repositories.uow import UnitOfWorkABC
 
 logger = logging.getLogger("auth")
@@ -11,7 +14,10 @@ class DeleteUserUseCase:
     def __init__(self, uow: UnitOfWorkABC):
         self._uow = uow
 
-    async def __call__(self, user_id: UUID) -> None:
+    async def __call__(self, user_id: UUID, actor_id: UUID) -> None:
+        if user_id == actor_id:
+            raise SelfActionForbiddenError()
+
         async with self._uow as uow:
             user = await uow.users.get_by_id(user_id)
             if user is None:

@@ -19,7 +19,7 @@ class TokenServiceJWT(TokenServiceJWTABC):
     def generate_token(self, data: dict, expires: int) -> str:
         payload = dict(data)
         payload["exp"] = datetime.datetime.now(
-            datetime.timezone.utc
+            datetime.UTC
         ) + datetime.timedelta(minutes=expires)
         return jwt.encode(
             payload,

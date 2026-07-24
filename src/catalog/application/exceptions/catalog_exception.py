@@ -15,3 +15,7 @@ class ProductNotFoundError(BaseAppException):
 
 class CurrencyRateUnavailableError(BaseAppException):
     message = "Currency rate is unavailable"
+
+
+class InvalidImageError(BaseAppException):
+    message = "Invalid image file"

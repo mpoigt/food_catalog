@@ -7,6 +7,8 @@ from auth.application.repositories.user_repository import UserRepositoryABC
 from auth.domain.entities.user import User
 from auth.infrastructure.db.models.user import UserDB
 
+SORTABLE_FIELDS = frozenset({"username", "email", "role", "created_at", "updated_at"})
+
 
 class SQLAlchemyUserRepository(UserRepositoryABC):
     def __init__(self, session: AsyncSession):
@@ -101,13 +103,15 @@ class SQLAlchemyUserRepository(UserRepositoryABC):
             if hasattr(UserDB, key):
                 query = query.where(getattr(UserDB, key) == value)
 
-        if sort_by and hasattr(UserDB, sort_by):
-            field = getattr(UserDB, sort_by)
-            query = query.order_by(field.desc() if order_by == "desc" else field.asc())
-
         total = await self._session.scalar(
             select(func.count()).select_from(query.subquery())
         )
+
+        if sort_by in SORTABLE_FIELDS:
+            field = getattr(UserDB, sort_by)
+            query = query.order_by(field.desc() if order_by == "desc" else field.asc())
+        else:
+            query = query.order_by(UserDB.created_at.desc())
 
         query = query.offset((page - 1) * limit).limit(limit)
         result = await self._session.execute(query)

@@ -1,0 +1,24 @@
+.panel {
+  margin-top: var(--space-6);
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  padding: var(--space-12) var(--space-6);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+
+.stars {
+  display: block;
+  color: var(--pink);
+  font-size: 22px;
+  margin-bottom: var(--space-3);
+}
+
+.title {
+  font-size: clamp(28px, 5vw, 44px);
+}
+
+.text {
+  margin-top: var(--space-2);
+  color: var(--grey);
+}

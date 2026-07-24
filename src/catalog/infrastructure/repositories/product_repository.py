@@ -3,9 +3,15 @@ from uuid import UUID
 from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from catalog.application.repositories.product_repository import ProductRepositoryABC
+from catalog.application.repositories.product_repository import (
+    ProductListItem,
+    ProductRepositoryABC,
+)
 from catalog.domain.entities.product import Product
+from catalog.infrastructure.db.models.category import CategoryDB
 from catalog.infrastructure.db.models.product import ProductDB
+
+SORTABLE_FIELDS = frozenset({"name", "price", "created_at", "updated_at"})
 
 
 class SQLAlchemyProductRepository(ProductRepositoryABC):
@@ -22,6 +28,7 @@ class SQLAlchemyProductRepository(ProductRepositoryABC):
             price=orm.price,
             note_common=orm.note_common,
             note_special=orm.note_special,
+            image_path=orm.image_path,
             created_at=orm.created_at,
             updated_at=orm.updated_at,
         )
@@ -35,6 +42,7 @@ class SQLAlchemyProductRepository(ProductRepositoryABC):
             price=product.price,
             note_common=product.note_common,
             note_special=product.note_special,
+            image_path=product.image_path,
         )
         self._session.add(orm)
         await self._session.flush()
@@ -52,6 +60,7 @@ class SQLAlchemyProductRepository(ProductRepositoryABC):
         orm.price = product.price
         orm.note_common = product.note_common
         orm.note_special = product.note_special
+        orm.image_path = product.image_path
 
         await self._session.flush()
         await self._session.refresh(orm)
@@ -77,8 +86,10 @@ class SQLAlchemyProductRepository(ProductRepositoryABC):
         category_id: UUID | None,
         sort_by: str | None,
         order_by: str,
-    ) -> tuple[list[Product], int]:
-        query = select(ProductDB)
+    ) -> tuple[list[ProductListItem], int]:
+        query = select(ProductDB, CategoryDB.name).join(
+            CategoryDB, ProductDB.category_id == CategoryDB.id
+        )
 
         if category_id is not None:
             query = query.where(ProductDB.category_id == category_id)
@@ -92,16 +103,21 @@ class SQLAlchemyProductRepository(ProductRepositoryABC):
                 )
             )
 
-        if sort_by and hasattr(ProductDB, sort_by):
-            field = getattr(ProductDB, sort_by)
-            query = query.order_by(field.desc() if order_by == "desc" else field.asc())
-
         total = await self._session.scalar(
             select(func.count()).select_from(query.subquery())
         )
 
+        if sort_by in SORTABLE_FIELDS:
+            field = getattr(ProductDB, sort_by)
+            query = query.order_by(field.desc() if order_by == "desc" else field.asc())
+        else:
+            query = query.order_by(ProductDB.created_at.desc())
+
         query = query.offset((page - 1) * limit).limit(limit)
         result = await self._session.execute(query)
-        products = [self._to_domain(orm) for orm in result.scalars().all()]
+        items = [
+            ProductListItem(product=self._to_domain(orm), category_name=name)
+            for orm, name in result.all()
+        ]
 
-        return products, total or 0
+        return items, total or 0

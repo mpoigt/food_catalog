@@ -1,0 +1,25 @@
+.section {
+  padding: var(--space-8) 0 var(--space-10);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.hint {
+  margin-top: var(--space-2);
+  font-size: 15px;
+  color: var(--grey);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+}

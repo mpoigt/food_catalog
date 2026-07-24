@@ -4,8 +4,8 @@ from uuid import uuid4
 
 from auth.application.dto.user import UserCreateDTO, UserResponseDTO
 from auth.application.exceptions.user_exception import UserAlreadyExistsError
-from auth.application.services.hashing import PasswordHasherABC
 from auth.application.repositories.uow import UnitOfWorkABC
+from auth.application.services.hashing import PasswordHasherABC
 from auth.domain.entities.user import User
 
 logger = logging.getLogger("auth")
@@ -23,7 +23,7 @@ class CreateUserUseCase:
             if await uow.users.is_username_exists(data.username):
                 raise UserAlreadyExistsError(data.username)
 
-            now = datetime.datetime.now(datetime.timezone.utc)
+            now = datetime.datetime.now(datetime.UTC)
             user = User(
                 id=uuid4(),
                 username=data.username,
@@ -39,10 +39,4 @@ class CreateUserUseCase:
         logger.info(
             "user_created", extra={"user_id": str(saved.id), "role": saved.role.value}
         )
-        return UserResponseDTO(
-            id=saved.id,
-            username=saved.username,
-            email=saved.email,
-            role=saved.role,
-            is_blocked=saved.is_blocked,
-        )
+        return UserResponseDTO.from_entity(saved)

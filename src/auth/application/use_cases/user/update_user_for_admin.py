@@ -3,11 +3,12 @@ from uuid import UUID
 
 from auth.application.dto.user import UserResponseDTO, UserUpdateAdminDTO
 from auth.application.exceptions.user_exception import (
+    SelfActionForbiddenError,
     UserAlreadyExistsError,
     UserNotFoundError,
 )
-from auth.application.services.hashing import PasswordHasherABC
 from auth.application.repositories.uow import UnitOfWorkABC
+from auth.application.services.hashing import PasswordHasherABC
 
 logger = logging.getLogger("auth")
 
@@ -18,12 +19,18 @@ class UpdateUserByAdminUseCase:
         self._hashing = hashing
 
     async def __call__(
-        self, user_id: UUID, data: UserUpdateAdminDTO
+        self, user_id: UUID, data: UserUpdateAdminDTO, actor_id: UUID
     ) -> UserResponseDTO:
         async with self._uow as uow:
             user = await uow.users.get_by_id(user_id)
             if user is None:
                 raise UserNotFoundError(str(user_id))
+
+            if user_id == actor_id:
+                if data.is_blocked:
+                    raise SelfActionForbiddenError()
+                if data.role is not None and data.role != user.role:
+                    raise SelfActionForbiddenError()
 
             if data.email is not None and data.email != user.email:
                 if await uow.users.is_email_exists(data.email):
@@ -53,10 +60,4 @@ class UpdateUserByAdminUseCase:
                 "password_changed": data.password is not None,
             },
         )
-        return UserResponseDTO(
-            id=updated.id,
-            username=updated.username,
-            email=updated.email,
-            role=updated.role,
-            is_blocked=updated.is_blocked,
-        )
+        return UserResponseDTO.from_entity(updated)

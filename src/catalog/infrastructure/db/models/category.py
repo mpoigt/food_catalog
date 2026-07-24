@@ -5,10 +5,10 @@ from sqlalchemy import DateTime, String, func
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
-from catalog.infrastructure.db import models
+from core.db.base import Base
 
 
-class CategoryDB(models.Base):
+class CategoryDB(Base):
     __tablename__ = "categories"
 
     id: Mapped[uuid.UUID] = mapped_column(

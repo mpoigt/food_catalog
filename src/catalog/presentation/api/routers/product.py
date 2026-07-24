@@ -1,12 +1,17 @@
 from uuid import UUID
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, Path, Query, status
+from fastapi import APIRouter, Depends, File, Path, Query, UploadFile, status
 
 from auth.application.dto.user import CurrentUserDTO
 from auth.domain.enums.role import Role
 from auth.presentation.dependencies.auth import get_current_user, require_roles
-from catalog.application.dto.product import ProductCreateDTO, ProductUpdateDTO
+from catalog.application.dto.product import (
+    ProductCreateDTO,
+    ProductImageDTO,
+    ProductUpdateDTO,
+)
+from catalog.application.exceptions.catalog_exception import InvalidImageError
 from catalog.application.use_cases.currency.get_product_price_usd import (
     GetProductPriceUsdUseCase,
 )
@@ -15,6 +20,9 @@ from catalog.application.use_cases.product.delete_product import DeleteProductUs
 from catalog.application.use_cases.product.get_product import GetProductUseCase
 from catalog.application.use_cases.product.list_products import ListProductsUseCase
 from catalog.application.use_cases.product.update_product import UpdateProductUseCase
+from catalog.application.use_cases.product.upload_product_image import (
+    UploadProductImageUseCase,
+)
 from catalog.presentation.api.schemas.product import (
     PaginatedProductsSchema,
     ProductCreateSchema,
@@ -28,12 +36,27 @@ router = APIRouter(prefix="/products", tags=["Products"])
 
 _manage = Depends(require_roles(Role.ADVANCED, Role.ADMIN))
 
+MEDIA_URL_PREFIX = "/media"
+MAX_IMAGE_BYTES = 5 * 1024 * 1024
+ALLOWED_IMAGE_TYPES = {
+    "image/jpeg": ".jpg",
+    "image/png": ".png",
+    "image/webp": ".webp",
+}
 
-def _to_response(dto: object, role: Role) -> ProductResponseSchema:
+
+def _to_response(dto, role: Role) -> ProductResponseSchema:
     schema = ProductResponseSchema.model_validate(dto)
+    if dto.image_path:
+        schema.image_url = f"{MEDIA_URL_PREFIX}/{dto.image_path}"
     if role == Role.USER:
         schema.note_special = None
     return schema
+
+
+def _writable_note_special(role: Role, value: str | None) -> str | None:
+    # USER can neither see nor set the special note; ignore whatever was sent.
+    return None if role == Role.USER else value
 
 
 @router.get("/", response_model=PaginatedProductsSchema)
@@ -112,7 +135,7 @@ async def create_product(
             description=data.description,
             price=data.price,
             note_common=data.note_common,
-            note_special=data.note_special,
+            note_special=_writable_note_special(user.role, data.note_special),
         )
     )
     return _to_response(dto, user.role)
@@ -136,9 +159,31 @@ async def update_product(
             description=data.description,
             price=data.price,
             note_common=data.note_common,
-            note_special=data.note_special,
+            note_special=_writable_note_special(user.role, data.note_special),
         ),
     )
+    return _to_response(dto, user.role)
+
+
+@router.post("/{product_id}/image", response_model=ProductResponseSchema)
+@inject
+async def upload_product_image(
+    product_id: UUID = Path(...),
+    file: UploadFile = File(...),
+    user: CurrentUserDTO = Depends(get_current_user),
+    use_case: UploadProductImageUseCase = Depends(
+        Provide[CatalogContainer.upload_product_image_use_case]
+    ),
+) -> ProductResponseSchema:
+    extension = ALLOWED_IMAGE_TYPES.get(file.content_type or "")
+    if extension is None:
+        raise InvalidImageError("Разрешены только JPEG, PNG и WEBP")
+
+    content = await file.read()
+    if len(content) > MAX_IMAGE_BYTES:
+        raise InvalidImageError("Файл больше 5 МБ")
+
+    dto = await use_case(product_id, ProductImageDTO(content=content, extension=extension))
     return _to_response(dto, user.role)
 
 

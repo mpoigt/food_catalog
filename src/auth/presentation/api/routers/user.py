@@ -3,12 +3,14 @@ from uuid import UUID
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Path, Query, status
 
-from auth.application.dto.user import UserCreateDTO, UserUpdateAdminDTO
+from auth.application.dto.user import CurrentUserDTO, UserCreateDTO, UserUpdateAdminDTO
 from auth.application.use_cases.user.create_user import CreateUserUseCase
 from auth.application.use_cases.user.delete_user import DeleteUserUseCase
 from auth.application.use_cases.user.get_user_by_id import GetUserUseCase
 from auth.application.use_cases.user.list_user import ListUsersUseCase
-from auth.application.use_cases.user.update_user_for_admin import UpdateUserByAdminUseCase
+from auth.application.use_cases.user.update_user_for_admin import (
+    UpdateUserByAdminUseCase,
+)
 from auth.domain.enums.role import Role
 from auth.presentation.api.schemas.user import (
     AdminCreateUserSchema,
@@ -80,6 +82,7 @@ async def get_user(
 async def update_user(
     data: UserUpdateAdminSchema,
     user_id: UUID = Path(...),
+    actor: CurrentUserDTO = Depends(require_roles(Role.ADMIN)),
     use_case: UpdateUserByAdminUseCase = Depends(
         Provide[AuthContainer.update_user_admin_use_case]
     ),
@@ -93,14 +96,16 @@ async def update_user(
             is_blocked=data.is_blocked,
             password=data.password,
         ),
+        actor_id=actor.id,
     )
     return UserResponseSchema.model_validate(dto)
 
 
-@router.patch("/{user_id}/delete", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 @inject
 async def delete_user(
     user_id: UUID = Path(...),
+    actor: CurrentUserDTO = Depends(require_roles(Role.ADMIN)),
     use_case: DeleteUserUseCase = Depends(Provide[AuthContainer.delete_user_use_case]),
 ) -> None:
-    await use_case(user_id)
+    await use_case(user_id, actor_id=actor.id)

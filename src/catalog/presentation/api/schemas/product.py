@@ -28,10 +28,12 @@ class ProductResponseSchema(BaseModel):
     id: UUID
     name: str
     category_id: UUID
+    category_name: str
     description: str
     price: Decimal
     note_common: str | None
     note_special: str | None
+    image_url: str | None = None
 
 
 class PaginatedProductsSchema(BaseModel):

@@ -16,10 +16,4 @@ class GetUserUseCase:
         if user is None:
             raise UserNotFoundError(str(user_id))
 
-        return UserResponseDTO(
-            id=user.id,
-            username=user.username,
-            email=user.email,
-            role=user.role,
-            is_blocked=user.is_blocked,
-        )
+        return UserResponseDTO.from_entity(user)
