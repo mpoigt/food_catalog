@@ -25,7 +25,9 @@ export function setUnauthorizedHandler(handler: (() => void) | null): void {
 
 function send(path: string, init: RequestInit): Promise<Response> {
   const headers = new Headers(init.headers);
-  headers.set("Content-Type", "application/json");
+  if (!(init.body instanceof FormData)) {
+    headers.set("Content-Type", "application/json");
+  }
 
   const token = getAccessToken();
   if (token) {

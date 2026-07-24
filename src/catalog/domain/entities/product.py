@@ -13,5 +13,6 @@ class Product:
     price: Decimal
     note_common: str | None
     note_special: str | None
+    image_path: str | None
     created_at: datetime
     updated_at: datetime

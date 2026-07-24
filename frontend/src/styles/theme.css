@@ -9,8 +9,14 @@
   --yellow: #ffd84d;
 
   --brown: #3e2318;
+  --brown-dark: #2c1810;
   --brown-soft: #6f5246;
   --grey: #8d7a72;
+
+  --white: #ffffff;
+  --danger: #d92f80;
+  --success: #1f7a4d;
+  --success-soft: #dff3e6;
 
   --bg: #ffffff;
   --surface: #ffffff;
@@ -19,6 +25,7 @@
   --font-display: "PT Serif", "Times New Roman", Times, serif;
   --font-body: "PT Serif", "Times New Roman", Times, serif;
   --font-button: "Inter", system-ui, -apple-system, sans-serif;
+  --font-nav: "Roboto", system-ui, -apple-system, sans-serif;
 
   --radius-sm: 12px;
   --radius-md: 20px;

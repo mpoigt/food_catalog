@@ -1,29 +1,77 @@
 .card {
+  position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-4);
   background: var(--blue-card);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5);
-  box-shadow: var(--shadow-card);
-  transition: transform 0.18s ease;
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-5);
+  box-shadow: var(--shadow-soft);
+  color: var(--brown);
+  transition: background 0.15s ease, transform 0.15s ease;
 }
 
 .card:hover {
-  transform: translateY(-5px);
+  background: var(--blue-card-deep);
+  transform: translateX(4px);
 }
 
 .icon {
   display: grid;
   place-items: center;
-  width: 84px;
-  height: 84px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: var(--surface);
-  font-size: 38px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.iconImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .name {
-  font-size: 19px;
+  flex: 1;
+  font-size: 18px;
+}
+
+.cta {
+  font-size: 0.9rem;
+  color: var(--pink);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.card:hover .cta {
+  opacity: 1;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+}
+
+.action {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--brown);
+  font-size: 13px;
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.action:hover {
+  transform: scale(1.1);
+}
+
+.danger:hover {
+  background: var(--pink-soft);
 }

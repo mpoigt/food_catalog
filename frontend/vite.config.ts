@@ -18,6 +18,10 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
+      "/media": {
+        target: API_TARGET,
+        changeOrigin: true,
+      },
     },
   },
 });

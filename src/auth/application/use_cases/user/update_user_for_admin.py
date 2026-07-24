@@ -3,6 +3,7 @@ from uuid import UUID
 
 from auth.application.dto.user import UserResponseDTO, UserUpdateAdminDTO
 from auth.application.exceptions.user_exception import (
+    SelfActionForbiddenError,
     UserAlreadyExistsError,
     UserNotFoundError,
 )
@@ -18,12 +19,18 @@ class UpdateUserByAdminUseCase:
         self._hashing = hashing
 
     async def __call__(
-        self, user_id: UUID, data: UserUpdateAdminDTO
+        self, user_id: UUID, data: UserUpdateAdminDTO, actor_id: UUID
     ) -> UserResponseDTO:
         async with self._uow as uow:
             user = await uow.users.get_by_id(user_id)
             if user is None:
                 raise UserNotFoundError(str(user_id))
+
+            if user_id == actor_id:
+                if data.is_blocked:
+                    raise SelfActionForbiddenError()
+                if data.role is not None and data.role != user.role:
+                    raise SelfActionForbiddenError()
 
             if data.email is not None and data.email != user.email:
                 if await uow.users.is_email_exists(data.email):

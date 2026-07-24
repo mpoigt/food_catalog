@@ -18,7 +18,7 @@ class ListProductsUseCase:
         order_by: str = "asc",
     ) -> tuple[list[ProductResponseDTO], int]:
         async with self._uow as uow:
-            products, total = await uow.products.list_products(
+            rows, total = await uow.products.list_products(
                 page=page,
                 limit=limit,
                 search=search,
@@ -27,4 +27,8 @@ class ListProductsUseCase:
                 order_by=order_by,
             )
 
-        return [ProductResponseDTO.from_entity(product) for product in products], total
+        items = [
+            ProductResponseDTO.from_entity(row.product, row.category_name)
+            for row in rows
+        ]
+        return items, total

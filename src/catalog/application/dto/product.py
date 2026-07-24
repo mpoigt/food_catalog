@@ -26,25 +26,35 @@ class ProductUpdateDTO:
 
 
 @dataclass
+class ProductImageDTO:
+    content: bytes
+    extension: str
+
+
+@dataclass
 class ProductResponseDTO:
     id: UUID
     name: str
     category_id: UUID
+    category_name: str
     description: str
     price: Decimal
     note_common: str | None
     note_special: str | None
+    image_path: str | None
 
     @classmethod
-    def from_entity(cls, product: Product) -> "ProductResponseDTO":
+    def from_entity(cls, product: Product, category_name: str) -> "ProductResponseDTO":
         return cls(
             id=product.id,
             name=product.name,
             category_id=product.category_id,
+            category_name=category_name,
             description=product.description,
             price=product.price,
             note_common=product.note_common,
             note_special=product.note_special,
+            image_path=product.image_path,
         )
 
 

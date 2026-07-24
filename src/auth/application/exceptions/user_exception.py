@@ -23,3 +23,7 @@ class UserBlockedError(BaseAppException):
 
 class AccessDeniedError(BaseAppException):
     message = "Access denied"
+
+
+class SelfActionForbiddenError(BaseAppException):
+    message = "You cannot block, delete or change the role of your own account"

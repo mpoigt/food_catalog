@@ -106,6 +106,31 @@ async def test_note_special_hidden_for_simple_user(client, make_token):
     assert as_advanced.json()["note_special"] == "Пересоленая"
 
 
+async def test_simple_user_cannot_set_note_special(client, make_token):
+    advanced = await make_token("ADVANCED", "adv@example.com")
+    simple = await make_token("USER", "user@example.com")
+    cid = await _create_category(client, advanced, "Еда")
+
+    created = await _create_product(
+        client, simple, cid, name="Квас", note_special="Секрет"
+    )
+    assert created.status_code == 201
+    pid = created.json()["id"]
+
+    as_advanced = await client.get(f"/products/{pid}", headers=_auth(advanced))
+    assert as_advanced.json()["note_special"] is None
+
+
+async def test_usd_rate_endpoint(client, make_token):
+    user = await make_token("USER", "user@example.com")
+
+    r = await client.get("/currency/usd-rate", headers=_auth(user))
+    assert r.status_code == 200
+    body = r.json()
+    assert Decimal(str(body["rate"])) == Decimal("3.00")
+    assert body["date"] == "2026-07-22"
+
+
 async def test_cascade_delete_removes_products(client, make_token):
     advanced = await make_token("ADVANCED", "adv@example.com")
     cid = await _create_category(client, advanced, "Еда")

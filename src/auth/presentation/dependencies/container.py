@@ -14,16 +14,15 @@ from auth.infrastructure.services.hashing import PasswordHasher
 from auth.infrastructure.services.token import TokenServiceJWT
 
 
-class AuthContainer(containers.DeclarativeContainer):
-    wiring_config = containers.WiringConfiguration(
-        modules=[
-            "auth.presentation.api.routers.auth",
-            "auth.presentation.api.routers.user",
-            "auth.presentation.api.routers.token",
-            "auth.presentation.dependencies.auth",
-        ],
-    )
+AUTH_WIRING_MODULES = [
+    "auth.presentation.api.routers.auth",
+    "auth.presentation.api.routers.user",
+    "auth.presentation.api.routers.token",
+    "auth.presentation.dependencies.auth",
+]
 
+
+class AuthContainer(containers.DeclarativeContainer):
     session_factory = providers.Dependency()
 
     settings = providers.Singleton(SettingsService)
@@ -46,6 +45,7 @@ class AuthContainer(containers.DeclarativeContainer):
     )
     refresh_tokens_use_case = providers.Factory(
         RefreshJWTTokensUseCase,
+        uow=uow,
         token_service=token_service_jwt,
         cache=cache_service,
         settings=settings,

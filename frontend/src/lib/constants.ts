@@ -14,8 +14,16 @@ export const NAV_LINKS = [
   { label: "О нас", to: "/about" },
 ];
 
+export const ROLES = ["user", "advanced", "admin"] as const;
+
+export const ROLE_LABELS: Record<string, string> = {
+  user: "Простой",
+  advanced: "Продвинутый",
+  admin: "Администратор",
+};
+
 export const ACCESS_TOKEN_KEY = "access_token";
 
 export const REFRESH_TOKEN_KEY = "refresh_token";
 
-export const RATE_HOVER_DELAY_MS = 400;
+export const USD_RATE_CACHE_KEY = "usd_rate";

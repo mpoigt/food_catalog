@@ -64,3 +64,14 @@
   border-radius: var(--radius-sm);
   padding: 8px 12px;
 }
+
+.foot {
+  margin-top: var(--space-3);
+  font-size: 14px;
+  color: var(--grey);
+  text-align: center;
+}
+
+.foot a {
+  color: var(--pink);
+}

@@ -12,12 +12,14 @@
 }
 
 .hint {
+  margin-top: var(--space-2);
   font-size: 15px;
   color: var(--grey);
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: var(--space-5);
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
 }

@@ -31,6 +31,15 @@ class UserUpdateAdminSchema(BaseModel):
     password: str | None = Field(default=None, min_length=8)
 
 
+class CurrentUserSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    username: str
+    email: EmailStr
+    role: Role
+
+
 class UserResponseSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

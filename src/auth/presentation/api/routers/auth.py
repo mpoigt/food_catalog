@@ -1,16 +1,18 @@
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, status
 
-from auth.application.dto.user import UserCreateDTO
+from auth.application.dto.user import CurrentUserDTO, UserCreateDTO
 from auth.application.use_cases.user.create_user import CreateUserUseCase
 from auth.application.use_cases.user.login_user import LoginUserUseCase
 from auth.domain.enums.role import Role
 from auth.presentation.api.schemas.token_pair import TokenPairSchema
 from auth.presentation.api.schemas.user import (
+    CurrentUserSchema,
     LoginSchema,
     RegisterSchema,
     UserResponseSchema,
 )
+from auth.presentation.dependencies.auth import get_current_user
 from auth.presentation.dependencies.container import AuthContainer
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -35,6 +37,13 @@ async def register(
         )
     )
     return UserResponseSchema.model_validate(dto)
+
+
+@router.get("/me", response_model=CurrentUserSchema)
+async def me(
+    user: CurrentUserDTO = Depends(get_current_user),
+) -> CurrentUserSchema:
+    return CurrentUserSchema.model_validate(user)
 
 
 @router.post("/login", response_model=TokenPairSchema)

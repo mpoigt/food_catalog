@@ -19,7 +19,7 @@
   left: 50%;
   transform: translateX(-50%);
   background: var(--brown);
-  color: #fff;
+  color: var(--white);
   font-family: var(--font-body);
   font-size: 12px;
   font-weight: 500;

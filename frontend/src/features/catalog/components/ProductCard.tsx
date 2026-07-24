@@ -5,9 +5,13 @@ import styles from "./ProductCard.module.css";
 
 type Props = {
   product: Product;
+  onEdit?: (product: Product) => void;
+  onDelete?: (product: Product) => void;
 };
 
-export function ProductCard({ product }: Props) {
+export function ProductCard({ product, onEdit, onDelete }: Props) {
+  const showActions = Boolean(onEdit || onDelete);
+
   return (
     <article className={styles.card}>
       <div className={styles.thumb}>
@@ -21,6 +25,30 @@ export function ProductCard({ product }: Props) {
         {product.noteCommon && (
           <span className={styles.sticker}>{product.noteCommon}</span>
         )}
+        {showActions && (
+          <div className={styles.actions}>
+            {onEdit && (
+              <button
+                type="button"
+                className={styles.action}
+                aria-label="Изменить"
+                onClick={() => onEdit(product)}
+              >
+                ✎
+              </button>
+            )}
+            {onDelete && (
+              <button
+                type="button"
+                className={`${styles.action} ${styles.danger}`}
+                aria-label="Удалить"
+                onClick={() => onDelete(product)}
+              >
+                🗑
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       <div className={styles.body}>
@@ -33,10 +61,7 @@ export function ProductCard({ product }: Props) {
         )}
 
         <div className={styles.footer}>
-          <PriceTag productId={product.id} price={product.price} />
-          <button className={styles.plus} type="button" aria-label="Добавить">
-            +
-          </button>
+          <PriceTag price={product.price} />
         </div>
       </div>
     </article>

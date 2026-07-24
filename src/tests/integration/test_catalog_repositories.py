@@ -27,6 +27,7 @@ def _product(category_id: uuid.UUID, **overrides) -> Product:
         price=Decimal("10.00"),
         note_common="Акция",
         note_special="Пересоленая",
+        image_path=None,
         created_at=_NOW,
         updated_at=_NOW,
     )
@@ -112,7 +113,8 @@ async def test_product_search_and_filter_by_category(db_session):
         page=1, limit=30, search="Тушен", category_id=None, sort_by=None, order_by="asc"
     )
     assert total_found == 1
-    assert found[0].name == "Тушенка"
+    assert found[0].product.name == "Тушенка"
+    assert found[0].category_name == "Еда"
 
     _, total_food = await repo.list_products(
         page=1, limit=30, search=None, category_id=food.id, sort_by=None, order_by="asc"

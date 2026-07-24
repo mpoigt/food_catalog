@@ -1,0 +1,12 @@
+.title {
+  display: inline-block;
+  font-family: var(--font-nav);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 8px 20px;
+  border-radius: var(--radius-pill);
+  background: var(--brown);
+  color: var(--white);
+}

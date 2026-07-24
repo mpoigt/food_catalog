@@ -20,7 +20,7 @@
 
 .pink {
   background: var(--pink);
-  color: #fff;
+  color: var(--white);
   box-shadow: var(--shadow-pink);
 }
 
@@ -42,10 +42,10 @@
 
 .dark {
   background: var(--brown);
-  color: #fff;
+  color: var(--white);
   box-shadow: var(--shadow-soft);
 }
 
 .dark:hover {
-  background: #2c1810;
+  background: var(--brown-dark);
 }

@@ -9,6 +9,12 @@ const CANDY_SRC = "/candy.png";
 export function Hero() {
   const [hasCandy, setHasCandy] = useState(true);
 
+  const scrollToProducts = () => {
+    document
+      .getElementById("products")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <section className={styles.hero}>
       <div className={styles.content}>
@@ -24,9 +30,9 @@ export function Hero() {
           чтобы собрать корзину за пару минут.
         </p>
         <div className={styles.actions}>
-          <Link to="/">
-            <Button variant="pink">Смотреть продукты →</Button>
-          </Link>
+          <Button variant="pink" onClick={scrollToProducts}>
+            Смотреть продукты →
+          </Button>
           <Link to="/categories">
             <Button variant="outline">Категории</Button>
           </Link>

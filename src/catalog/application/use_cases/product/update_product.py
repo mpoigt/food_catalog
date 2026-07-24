@@ -40,6 +40,9 @@ class UpdateProductUseCase:
                 product.note_special = data.note_special
 
             updated = await uow.products.update(product)
+            category = await uow.categories.get_by_id(updated.category_id)
 
         logger.info("product_updated", extra={"product_id": str(updated.id)})
-        return ProductResponseDTO.from_entity(updated)
+        return ProductResponseDTO.from_entity(
+            updated, category.name if category else ""
+        )

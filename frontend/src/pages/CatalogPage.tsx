@@ -1,30 +1,133 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "../components/ui/Button";
-import { Chip } from "../components/ui/Chip";
+import { PageTitle } from "../components/ui/PageTitle";
+import { SearchBar } from "../components/ui/SearchBar";
 import { StateMessage } from "../components/ui/StateMessage";
+import { useToast } from "../components/ui/Toast";
 import { Hero } from "../features/catalog/components/Hero";
+import { ProductForm } from "../features/catalog/components/ProductForm";
 import { ProductGrid } from "../features/catalog/components/ProductGrid";
-import { useProducts } from "../features/catalog/hooks/useCatalog";
+import { useCategories, useProducts } from "../features/catalog/hooks/useCatalog";
 import { useAuth } from "../features/auth/AuthContext";
+import { deleteProduct } from "../api/catalog";
+import { useDebouncedValue } from "../lib/useDebouncedValue";
+import type { Product } from "../types/catalog";
 import styles from "./CatalogPage.module.css";
 
+type FormState = { product?: Product } | null;
+
 export function CatalogPage() {
-  const { isAuthenticated } = useAuth();
-  const { data: products, loading, error } = useProducts();
+  const { isAuthenticated, canEditProducts, canDeleteProducts } = useAuth();
+  const { notify } = useToast();
+  const [params, setParams] = useSearchParams();
+  const categoryId = params.get("category");
+  const urlSearch = params.get("search") ?? "";
+
+  const [term, setTerm] = useState(urlSearch);
+  const debounced = useDebouncedValue(term, 350);
+  const [form, setForm] = useState<FormState>(null);
+
+  useEffect(() => {
+    setParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (debounced) {
+          next.set("search", debounced);
+        } else {
+          next.delete("search");
+        }
+        return next;
+      },
+      { replace: true },
+    );
+  }, [debounced, setParams]);
+
+  useEffect(() => {
+    if (categoryId) {
+      document
+        .getElementById("products")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [categoryId]);
+
+  const { data: categories } = useCategories();
+  const {
+    data: products,
+    total,
+    loading,
+    error,
+    reload,
+  } = useProducts({
+    search: urlSearch || undefined,
+    categoryId: categoryId || undefined,
+  });
+
+  const handleCategoryChange = (value: string) => {
+    setParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (value) {
+        next.set("category", value);
+      } else {
+        next.delete("category");
+      }
+      return next;
+    });
+  };
+
+  const handleDelete = async (product: Product) => {
+    if (!window.confirm(`Удалить продукт «${product.name}»?`)) {
+      return;
+    }
+    try {
+      await deleteProduct(product.id);
+      reload();
+    } catch (cause) {
+      notify((cause as Error).message);
+    }
+  };
+
+  const hasFilters = Boolean(urlSearch || categoryId);
 
   return (
     <div className={styles.page}>
       <Hero />
 
-      <section className={styles.section}>
+      <section id="products" className={styles.section}>
         <div className={styles.head}>
-          <Chip tone="dark">Продукты</Chip>
+          <PageTitle>Продукты</PageTitle>
           <Link to="/categories" className={styles.allLink}>
             Смотреть категории →
           </Link>
         </div>
 
-        {loading && (
+        <div className={styles.toolbar}>
+          <SearchBar value={term} onChange={setTerm} />
+          <select
+            className={styles.categorySelect}
+            value={categoryId ?? ""}
+            onChange={(event) => handleCategoryChange(event.target.value)}
+          >
+            <option value="">Все категории</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+          {!loading && !error && hasFilters && (
+            <span className={styles.count}>Найдено: {total}</span>
+          )}
+          {canEditProducts && categories.length > 0 && (
+            <div className={styles.spacer}>
+              <Button variant="pink" onClick={() => setForm({})}>
+                + Добавить продукт
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {loading && products.length === 0 && !error && (
           <StateMessage icon="⏳" title="Загружаем продукты…" />
         )}
 
@@ -48,15 +151,32 @@ export function CatalogPage() {
         {!loading && !error && products.length === 0 && (
           <StateMessage
             icon="🧺"
-            title="Пока пусто"
-            text="В каталоге ещё нет продуктов."
+            title={hasFilters ? "Ничего не найдено" : "Пока пусто"}
+            text={
+              hasFilters
+                ? "Попробуйте изменить запрос или сбросить фильтр."
+                : "В каталоге ещё нет продуктов."
+            }
           />
         )}
 
-        {!loading && !error && products.length > 0 && (
-          <ProductGrid products={products} />
+        {!error && products.length > 0 && (
+          <ProductGrid
+            products={products}
+            onEdit={canEditProducts ? (product) => setForm({ product }) : undefined}
+            onDelete={canDeleteProducts ? handleDelete : undefined}
+          />
         )}
       </section>
+
+      {form && (
+        <ProductForm
+          product={form.product}
+          categories={categories}
+          onClose={() => setForm(null)}
+          onSaved={reload}
+        />
+      )}
     </div>
   );
 }

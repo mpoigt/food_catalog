@@ -30,6 +30,7 @@
 }
 
 .link {
+  font-family: var(--font-nav);
   font-size: 15px;
   font-weight: 500;
   color: var(--brown-soft);

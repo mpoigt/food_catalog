@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/Button";
 import { Chip } from "../components/ui/Chip";
 import { useAuth } from "../features/auth/AuthContext";
@@ -66,6 +66,10 @@ export function LoginPage() {
         <Button variant="pink" type="submit" disabled={pending}>
           {pending ? "Входим…" : "Войти"}
         </Button>
+
+        <p className={styles.foot}>
+          Нет аккаунта? <Link to="/register">Зарегистрироваться</Link>
+        </p>
       </form>
     </section>
   );

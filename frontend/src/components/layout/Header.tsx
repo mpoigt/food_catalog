@@ -5,7 +5,11 @@ import { Button } from "../ui/Button";
 import styles from "./Header.module.css";
 
 export function Header() {
-  const { isAuthenticated, signOut } = useAuth();
+  const { isAuthenticated, isAdmin, signOut } = useAuth();
+
+  const links = isAdmin
+    ? [...NAV_LINKS, { label: "Пользователи", to: "/users" }]
+    : NAV_LINKS;
 
   return (
     <header className={styles.header}>
@@ -15,7 +19,7 @@ export function Header() {
       </Link>
 
       <nav className={styles.nav}>
-        {NAV_LINKS.map((link) => (
+        {links.map((link) => (
           <NavLink
             key={link.to}
             to={link.to}
@@ -32,7 +36,9 @@ export function Header() {
       <div className={styles.actions}>
         {isAuthenticated ? (
           <>
-            <span className={styles.avatar}>👤</span>
+            <Link to="/profile" className={styles.avatar} aria-label="Профиль">
+              👤
+            </Link>
             <Button variant="outline" onClick={signOut}>
               Выйти
             </Button>

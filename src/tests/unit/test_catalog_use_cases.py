@@ -16,6 +16,7 @@ from catalog.application.services.currency import UsdRate
 from catalog.application.use_cases.category.create_category import CreateCategoryUseCase
 from catalog.application.use_cases.category.delete_category import DeleteCategoryUseCase
 from catalog.application.use_cases.category.update_category import UpdateCategoryUseCase
+from catalog.application.repositories.product_repository import ProductListItem
 from catalog.application.use_cases.currency.get_product_price_usd import (
     GetProductPriceUsdUseCase,
 )
@@ -40,6 +41,7 @@ def _product(category_id: uuid.UUID, **overrides) -> Product:
         price=Decimal("10.00"),
         note_common="Акция",
         note_special="Пересоленая",
+        image_path=None,
         created_at=_NOW,
         updated_at=_NOW,
     )
@@ -97,7 +99,10 @@ class _FakeProductRepo:
         return self.items.get(product_id)
 
     async def list_products(self, **kwargs):
-        items = list(self.items.values())
+        items = [
+            ProductListItem(product=product, category_name="")
+            for product in self.items.values()
+        ]
         return items, len(items)
 
 

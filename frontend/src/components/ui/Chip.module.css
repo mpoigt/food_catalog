@@ -11,7 +11,7 @@
 
 .dark {
   background: var(--brown);
-  color: #fff;
+  color: var(--white);
 }
 
 .pink {
