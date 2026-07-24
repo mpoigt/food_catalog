@@ -1,16 +1,16 @@
 import datetime
 from uuid import UUID
 
-from auth.application.dto.token_pair import TokenPair
-from auth.domain.enums.token_type import TOKEN_TYPE_CLAIM, TokenType
-from auth.application.services.cache import CacheServiceABC
 from auth.application.config.settings import SettingsServiceABC
-from auth.application.services.token import TokenServiceJWTABC
-from auth.application.repositories.uow import UnitOfWorkABC
+from auth.application.dto.token_pair import TokenPair
 from auth.application.exceptions.user_exception import (
     InvalidTokenError,
     UserBlockedError,
 )
+from auth.application.repositories.uow import UnitOfWorkABC
+from auth.application.services.cache import CacheServiceABC
+from auth.application.services.token import TokenServiceJWTABC
+from auth.domain.enums.token_type import TOKEN_TYPE_CLAIM, TokenType
 
 
 class RefreshJWTTokensUseCase:
@@ -57,7 +57,7 @@ class RefreshJWTTokensUseCase:
             self._settings.refresh_token_expire,
         )
 
-        now = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+        now = int(datetime.datetime.now(datetime.UTC).timestamp())
         ttl = max(payload["exp"] - now, 0)
         await self._cache.add(refresh_token, ttl)
 

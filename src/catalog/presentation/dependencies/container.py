@@ -1,8 +1,6 @@
 from dependency_injector import containers, providers
 from redis.asyncio import Redis  # type: ignore[import-untyped]
 
-from core.config.settings import RedisSettings
-
 from catalog.application.use_cases.category.create_category import CreateCategoryUseCase
 from catalog.application.use_cases.category.delete_category import DeleteCategoryUseCase
 from catalog.application.use_cases.category.get_category import GetCategoryUseCase
@@ -24,7 +22,7 @@ from catalog.infrastructure.config.settings import MediaSettings
 from catalog.infrastructure.db.uow.uow import CatalogUnitOfWork
 from catalog.infrastructure.services.currency import NBRBCurrencyService
 from catalog.infrastructure.services.file_storage import LocalFileStorage
-
+from core.config.settings import RedisSettings
 
 CATALOG_WIRING_MODULES = [
     "catalog.presentation.api.routers.category",

@@ -1,11 +1,13 @@
 import json
-from datetime import date
+from datetime import UTC, datetime
 from decimal import Decimal
 
 import httpx
 from redis.asyncio import Redis  # type: ignore[import-untyped]
 
-from catalog.application.exceptions.catalog_exception import CurrencyRateUnavailableError
+from catalog.application.exceptions.catalog_exception import (
+    CurrencyRateUnavailableError,
+)
 from catalog.application.services.currency import CurrencyServiceABC, UsdRate
 
 _NBRB_USD_URL = "https://api.nbrb.by/exrates/rates/USD"
@@ -17,7 +19,7 @@ class NBRBCurrencyService(CurrencyServiceABC):
         self._redis = redis
 
     async def get_usd_rate(self) -> UsdRate:
-        key = f"catalog:nbrb:usd:{date.today().isoformat()}"
+        key = f"catalog:nbrb:usd:{datetime.now(UTC).date().isoformat()}"
 
         cached = await self._redis.get(key)
         if cached:

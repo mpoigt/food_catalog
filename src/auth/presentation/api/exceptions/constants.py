@@ -1,6 +1,5 @@
 from fastapi import status
 
-from core.exceptions.base import BaseAppException
 from auth.application.exceptions.user_exception import (
     AccessDeniedError,
     InvalidPasswordError,
@@ -10,6 +9,7 @@ from auth.application.exceptions.user_exception import (
     UserBlockedError,
     UserNotFoundError,
 )
+from core.exceptions.base import BaseAppException
 
 EXCEPTION_STATUS_MAP: dict[type[BaseAppException], int] = {
     UserNotFoundError: status.HTTP_404_NOT_FOUND,

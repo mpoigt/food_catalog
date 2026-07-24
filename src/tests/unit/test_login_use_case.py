@@ -50,16 +50,16 @@ def _settings():
 
 
 def _user(**overrides):
-    data = dict(
-        id=uuid.uuid4(),
-        username="user",
-        email="user@example.com",
-        password_hash="hash",
-        role=Role.USER,
-        is_blocked=False,
-        created_at=None,
-        updated_at=None,
-    )
+    data = {
+        "id": uuid.uuid4(),
+        "username": "user",
+        "email": "user@example.com",
+        "password_hash": "hash",
+        "role": Role.USER,
+        "is_blocked": False,
+        "created_at": None,
+        "updated_at": None,
+    }
     data.update(overrides)
     return User(**data)
 

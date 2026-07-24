@@ -3,11 +3,10 @@ import datetime
 import os
 from uuid import uuid4
 
-from core.container import CoreContainer
-
 from auth.domain.entities.user import User
 from auth.domain.enums.role import Role
 from auth.presentation.dependencies.container import container
+from core.container import CoreContainer
 
 container.session_factory.override(CoreContainer().session_factory)
 
@@ -25,7 +24,7 @@ async def seed() -> None:
             print(f"Admin already exists: {ADMIN_EMAIL}")
             return
 
-        now = datetime.datetime.now(datetime.timezone.utc)
+        now = datetime.datetime.now(datetime.UTC)
         await uow.users.save(
             User(
                 id=uuid4(),

@@ -8,7 +8,9 @@ from auth.application.use_cases.user.create_user import CreateUserUseCase
 from auth.application.use_cases.user.delete_user import DeleteUserUseCase
 from auth.application.use_cases.user.get_user_by_id import GetUserUseCase
 from auth.application.use_cases.user.list_user import ListUsersUseCase
-from auth.application.use_cases.user.update_user_for_admin import UpdateUserByAdminUseCase
+from auth.application.use_cases.user.update_user_for_admin import (
+    UpdateUserByAdminUseCase,
+)
 from auth.domain.enums.role import Role
 from auth.presentation.api.schemas.user import (
     AdminCreateUserSchema,

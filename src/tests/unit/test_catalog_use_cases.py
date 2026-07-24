@@ -12,11 +12,11 @@ from catalog.application.exceptions.catalog_exception import (
     CurrencyRateUnavailableError,
     ProductNotFoundError,
 )
+from catalog.application.repositories.product_repository import ProductListItem
 from catalog.application.services.currency import UsdRate
 from catalog.application.use_cases.category.create_category import CreateCategoryUseCase
 from catalog.application.use_cases.category.delete_category import DeleteCategoryUseCase
 from catalog.application.use_cases.category.update_category import UpdateCategoryUseCase
-from catalog.application.repositories.product_repository import ProductListItem
 from catalog.application.use_cases.currency.get_product_price_usd import (
     GetProductPriceUsdUseCase,
 )
@@ -25,7 +25,7 @@ from catalog.application.use_cases.product.update_product import UpdateProductUs
 from catalog.domain.entities.category import Category
 from catalog.domain.entities.product import Product
 
-_NOW = datetime.datetime.now(datetime.timezone.utc)
+_NOW = datetime.datetime.now(datetime.UTC)
 
 
 def _category(name: str = "Еда") -> Category:
@@ -33,18 +33,18 @@ def _category(name: str = "Еда") -> Category:
 
 
 def _product(category_id: uuid.UUID, **overrides) -> Product:
-    data = dict(
-        id=uuid.uuid4(),
-        name="Селедка",
-        category_id=category_id,
-        description="Селедка соленая",
-        price=Decimal("10.00"),
-        note_common="Акция",
-        note_special="Пересоленая",
-        image_path=None,
-        created_at=_NOW,
-        updated_at=_NOW,
-    )
+    data = {
+        "id": uuid.uuid4(),
+        "name": "Селедка",
+        "category_id": category_id,
+        "description": "Селедка соленая",
+        "price": Decimal("10.00"),
+        "note_common": "Акция",
+        "note_special": "Пересоленая",
+        "image_path": None,
+        "created_at": _NOW,
+        "updated_at": _NOW,
+    }
     data.update(overrides)
     return Product(**data)
 
@@ -264,7 +264,7 @@ async def test_get_product_price_usd_zero_rate_raises():
     uow = _FakeUow(categories=cat_repo, products=prod_repo)
 
     with pytest.raises(CurrencyRateUnavailableError):
-        await GetProductPriceUsdUseCase(uow, _FakeCurrency(Decimal("0")))(product.id)
+        await GetProductPriceUsdUseCase(uow, _FakeCurrency(Decimal(0)))(product.id)
 
 
 async def test_get_product_price_usd_product_not_found_raises():

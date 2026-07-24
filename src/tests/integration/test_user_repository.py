@@ -7,17 +7,17 @@ from auth.infrastructure.repositories.user_repository import SQLAlchemyUserRepos
 
 
 def _user(**overrides) -> User:
-    now = datetime.datetime.now(datetime.timezone.utc)
-    data = dict(
-        id=uuid.uuid4(),
-        username="user",
-        email="user@example.com",
-        password_hash="hash",
-        role=Role.USER,
-        is_blocked=False,
-        created_at=now,
-        updated_at=now,
-    )
+    now = datetime.datetime.now(datetime.UTC)
+    data = {
+        "id": uuid.uuid4(),
+        "username": "user",
+        "email": "user@example.com",
+        "password_hash": "hash",
+        "role": Role.USER,
+        "is_blocked": False,
+        "created_at": now,
+        "updated_at": now,
+    }
     data.update(overrides)
     return User(**data)
 

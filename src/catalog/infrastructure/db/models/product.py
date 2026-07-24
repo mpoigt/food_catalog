@@ -6,10 +6,10 @@ from sqlalchemy import DateTime, ForeignKey, Numeric, String, func
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
-from catalog.infrastructure.db import models
+from core.db.base import Base
 
 
-class ProductDB(models.Base):
+class ProductDB(Base):
     __tablename__ = "products"
 
     id: Mapped[uuid.UUID] = mapped_column(

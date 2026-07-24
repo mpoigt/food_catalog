@@ -12,9 +12,6 @@ from catalog.application.dto.product import (
     ProductUpdateDTO,
 )
 from catalog.application.exceptions.catalog_exception import InvalidImageError
-from catalog.application.use_cases.product.upload_product_image import (
-    UploadProductImageUseCase,
-)
 from catalog.application.use_cases.currency.get_product_price_usd import (
     GetProductPriceUsdUseCase,
 )
@@ -23,6 +20,9 @@ from catalog.application.use_cases.product.delete_product import DeleteProductUs
 from catalog.application.use_cases.product.get_product import GetProductUseCase
 from catalog.application.use_cases.product.list_products import ListProductsUseCase
 from catalog.application.use_cases.product.update_product import UpdateProductUseCase
+from catalog.application.use_cases.product.upload_product_image import (
+    UploadProductImageUseCase,
+)
 from catalog.presentation.api.schemas.product import (
     PaginatedProductsSchema,
     ProductCreateSchema,

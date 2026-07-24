@@ -20,7 +20,7 @@ class CreateProductUseCase:
             if category is None:
                 raise CategoryNotFoundError(str(data.category_id))
 
-            now = datetime.datetime.now(datetime.timezone.utc)
+            now = datetime.datetime.now(datetime.UTC)
             product = Product(
                 id=uuid4(),
                 name=data.name,

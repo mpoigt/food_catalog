@@ -3,16 +3,16 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from core.container import CoreContainer
-from core.logging.config import setup_logging
-from core.presentation.exception_handlers import init_exception_handlers
-
-from auth.presentation.api.exceptions.constants import EXCEPTION_STATUS_MAP as AUTH_EXCEPTIONS
+from auth.presentation.api.exceptions.constants import (
+    EXCEPTION_STATUS_MAP as AUTH_EXCEPTIONS,
+)
 from auth.presentation.api.routers.auth import router as auth_router
 from auth.presentation.api.routers.token import router as token_router
 from auth.presentation.api.routers.user import router as user_router
 from auth.presentation.dependencies.container import (
     AUTH_WIRING_MODULES,
+)
+from auth.presentation.dependencies.container import (
     container as auth_container,
 )
 from catalog.presentation.api.exceptions.constants import (
@@ -23,8 +23,13 @@ from catalog.presentation.api.routers.currency import router as currency_router
 from catalog.presentation.api.routers.product import router as product_router
 from catalog.presentation.dependencies.container import (
     CATALOG_WIRING_MODULES,
+)
+from catalog.presentation.dependencies.container import (
     container as catalog_container,
 )
+from core.container import CoreContainer
+from core.logging.config import setup_logging
+from core.presentation.exception_handlers import init_exception_handlers
 
 setup_logging()
 

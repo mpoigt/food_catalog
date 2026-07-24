@@ -5,7 +5,6 @@ from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from auth.application.dto.user import CurrentUserDTO
-from auth.domain.enums.token_type import TOKEN_TYPE_CLAIM, TokenType
 from auth.application.exceptions.user_exception import (
     AccessDeniedError,
     InvalidTokenError,
@@ -14,6 +13,7 @@ from auth.application.exceptions.user_exception import (
 from auth.application.repositories.uow import UnitOfWorkABC
 from auth.application.services.token import TokenServiceJWTABC
 from auth.domain.enums.role import Role
+from auth.domain.enums.token_type import TOKEN_TYPE_CLAIM, TokenType
 from auth.presentation.dependencies.container import AuthContainer
 
 _bearer = HTTPBearer(auto_error=False)

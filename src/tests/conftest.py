@@ -7,8 +7,8 @@ import pytest_asyncio
 from sqlalchemy.engine import make_url
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from auth.infrastructure.db.models import Base
 import catalog.infrastructure.db.models  # noqa: F401
+from auth.infrastructure.db.models import Base
 
 TEST_DB_URL = os.getenv(
     "TEST_DB_URL",

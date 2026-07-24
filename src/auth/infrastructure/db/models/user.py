@@ -1,17 +1,16 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime
+from sqlalchemy import Boolean, DateTime, String, func
 from sqlalchemy import Enum as SAEnum
-from sqlalchemy import String, func
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from auth.domain.enums.role import Role
-from auth.infrastructure.db import models
+from core.db.base import Base
 
 
-class UserDB(models.Base):
+class UserDB(Base):
     __tablename__ = "users"
 
     id: Mapped[uuid.UUID] = mapped_column(

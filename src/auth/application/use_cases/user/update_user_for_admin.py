@@ -7,8 +7,8 @@ from auth.application.exceptions.user_exception import (
     UserAlreadyExistsError,
     UserNotFoundError,
 )
-from auth.application.services.hashing import PasswordHasherABC
 from auth.application.repositories.uow import UnitOfWorkABC
+from auth.application.services.hashing import PasswordHasherABC
 
 logger = logging.getLogger("auth")
 

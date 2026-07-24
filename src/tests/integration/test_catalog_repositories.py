@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from catalog.domain.entities.category import Category
@@ -11,7 +11,7 @@ from catalog.infrastructure.repositories.product_repository import (
     SQLAlchemyProductRepository,
 )
 
-_NOW = datetime.now(timezone.utc)
+_NOW = datetime.now(UTC)
 
 
 def _category(name: str) -> Category:
@@ -19,18 +19,18 @@ def _category(name: str) -> Category:
 
 
 def _product(category_id: uuid.UUID, **overrides) -> Product:
-    data = dict(
-        id=uuid.uuid4(),
-        name="Селедка",
-        category_id=category_id,
-        description="Селедка соленая",
-        price=Decimal("10.00"),
-        note_common="Акция",
-        note_special="Пересоленая",
-        image_path=None,
-        created_at=_NOW,
-        updated_at=_NOW,
-    )
+    data = {
+        "id": uuid.uuid4(),
+        "name": "Селедка",
+        "category_id": category_id,
+        "description": "Селедка соленая",
+        "price": Decimal("10.00"),
+        "note_common": "Акция",
+        "note_special": "Пересоленая",
+        "image_path": None,
+        "created_at": _NOW,
+        "updated_at": _NOW,
+    }
     data.update(overrides)
     return Product(**data)
 

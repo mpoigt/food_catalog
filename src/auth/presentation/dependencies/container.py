@@ -6,13 +6,14 @@ from auth.application.use_cases.user.delete_user import DeleteUserUseCase
 from auth.application.use_cases.user.get_user_by_id import GetUserUseCase
 from auth.application.use_cases.user.list_user import ListUsersUseCase
 from auth.application.use_cases.user.login_user import LoginUserUseCase
-from auth.application.use_cases.user.update_user_for_admin import UpdateUserByAdminUseCase
+from auth.application.use_cases.user.update_user_for_admin import (
+    UpdateUserByAdminUseCase,
+)
 from auth.infrastructure.config.settings import SettingsService
 from auth.infrastructure.db.uow.uow import AuthUnitOfWork
 from auth.infrastructure.services.cache import CacheService
 from auth.infrastructure.services.hashing import PasswordHasher
 from auth.infrastructure.services.token import TokenServiceJWT
-
 
 AUTH_WIRING_MODULES = [
     "auth.presentation.api.routers.auth",
