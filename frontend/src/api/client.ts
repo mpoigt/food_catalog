@@ -69,11 +69,16 @@ function refreshTokens(): Promise<boolean> {
   return refreshInFlight;
 }
 
+const NON_REFRESHABLE_PATHS = [
+  "/auth/login",
+  "/auth/register",
+  "/tokens/refresh",
+];
+
 function isRefreshable(path: string): boolean {
   return (
     getRefreshToken() !== null &&
-    !path.startsWith("/auth/") &&
-    path !== "/tokens/refresh"
+    !NON_REFRESHABLE_PATHS.some((prefix) => path.startsWith(prefix))
   );
 }
 

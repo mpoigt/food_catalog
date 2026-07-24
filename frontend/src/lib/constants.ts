@@ -25,5 +25,3 @@ export const ROLE_LABELS: Record<string, string> = {
 export const ACCESS_TOKEN_KEY = "access_token";
 
 export const REFRESH_TOKEN_KEY = "refresh_token";
-
-export const USD_RATE_CACHE_KEY = "usd_rate";

@@ -55,7 +55,6 @@ def _to_response(dto, role: Role) -> ProductResponseSchema:
 
 
 def _writable_note_special(role: Role, value: str | None) -> str | None:
-    # USER can neither see nor set the special note; ignore whatever was sent.
     return None if role == Role.USER else value
 
 
