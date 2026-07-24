@@ -5,7 +5,11 @@ from decimal import Decimal
 import pytest
 
 from catalog.application.dto.category import CategoryCreateDTO, CategoryUpdateDTO
-from catalog.application.dto.product import ProductCreateDTO, ProductUpdateDTO
+from catalog.application.dto.product import (
+    ProductCreateDTO,
+    ProductImageDTO,
+    ProductUpdateDTO,
+)
 from catalog.application.exceptions.catalog_exception import (
     CategoryAlreadyExistsError,
     CategoryNotFoundError,
@@ -22,6 +26,9 @@ from catalog.application.use_cases.currency.get_product_price_usd import (
 )
 from catalog.application.use_cases.product.create_product import CreateProductUseCase
 from catalog.application.use_cases.product.update_product import UpdateProductUseCase
+from catalog.application.use_cases.product.upload_product_image import (
+    UploadProductImageUseCase,
+)
 from catalog.domain.entities.category import Category
 from catalog.domain.entities.product import Product
 
@@ -122,6 +129,25 @@ class _FakeUow:
 
     async def rollback(self):
         ...
+
+
+class _CommitFailingUow(_FakeUow):
+    async def __aexit__(self, exc_type, exc, traceback):
+        raise RuntimeError("commit failed")
+
+
+class _FakeStorage:
+    def __init__(self):
+        self.saved: list[str] = []
+        self.deleted: list[str] = []
+
+    async def save(self, content, extension):
+        path = f"products/img{len(self.saved) + 1}{extension}"
+        self.saved.append(path)
+        return path
+
+    async def delete(self, relative_path):
+        self.deleted.append(relative_path)
 
 
 class _FakeCurrency:
@@ -271,3 +297,56 @@ async def test_get_product_price_usd_product_not_found_raises():
     uow = _FakeUow()
     with pytest.raises(ProductNotFoundError):
         await GetProductPriceUsdUseCase(uow, _FakeCurrency(Decimal("3.00")))(uuid.uuid4())
+
+
+async def test_upload_product_image_replaces_previous_and_keeps_new():
+    cat = _category()
+    cat_repo = _FakeCategoryRepo()
+    await cat_repo.save(cat)
+    prod_repo = _FakeProductRepo()
+    product = _product(cat.id, image_path="products/old.png")
+    await prod_repo.save(product)
+    uow = _FakeUow(categories=cat_repo, products=prod_repo)
+    storage = _FakeStorage()
+
+    dto = await UploadProductImageUseCase(uow, storage)(
+        product.id, ProductImageDTO(content=b"bytes", extension=".png")
+    )
+
+    new_path = storage.saved[0]
+    assert dto.image_path == new_path
+    assert prod_repo.items[product.id].image_path == new_path
+    assert storage.deleted == ["products/old.png"]
+    assert new_path not in storage.deleted
+
+
+async def test_upload_product_image_not_found_deletes_orphan_file():
+    uow = _FakeUow()
+    storage = _FakeStorage()
+
+    with pytest.raises(ProductNotFoundError):
+        await UploadProductImageUseCase(uow, storage)(
+            uuid.uuid4(), ProductImageDTO(content=b"bytes", extension=".png")
+        )
+
+    assert len(storage.saved) == 1
+    assert storage.deleted == storage.saved
+
+
+async def test_upload_product_image_commit_failure_deletes_orphan_file():
+    cat = _category()
+    cat_repo = _FakeCategoryRepo()
+    await cat_repo.save(cat)
+    prod_repo = _FakeProductRepo()
+    product = _product(cat.id)
+    await prod_repo.save(product)
+    uow = _CommitFailingUow(categories=cat_repo, products=prod_repo)
+    storage = _FakeStorage()
+
+    with pytest.raises(RuntimeError):
+        await UploadProductImageUseCase(uow, storage)(
+            product.id, ProductImageDTO(content=b"bytes", extension=".png")
+        )
+
+    assert len(storage.saved) == 1
+    assert storage.deleted == storage.saved
