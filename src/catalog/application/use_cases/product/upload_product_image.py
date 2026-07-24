@@ -17,15 +17,21 @@ class UploadProductImageUseCase:
     async def __call__(
         self, product_id: UUID, data: ProductImageDTO
     ) -> ProductResponseDTO:
-        async with self._uow as uow:
-            product = await uow.products.get_by_id(product_id)
-            if product is None:
-                raise ProductNotFoundError(str(product_id))
+        new_path = await self._storage.save(data.content, data.extension)
 
-            previous_path = product.image_path
-            product.image_path = await self._storage.save(data.content, data.extension)
-            updated = await uow.products.update(product)
-            category = await uow.categories.get_by_id(updated.category_id)
+        try:
+            async with self._uow as uow:
+                product = await uow.products.get_by_id(product_id)
+                if product is None:
+                    raise ProductNotFoundError(str(product_id))
+
+                previous_path = product.image_path
+                product.image_path = new_path
+                updated = await uow.products.update(product)
+                category = await uow.categories.get_by_id(updated.category_id)
+        except Exception:
+            await self._storage.delete(new_path)
+            raise
 
         if previous_path:
             await self._storage.delete(previous_path)
