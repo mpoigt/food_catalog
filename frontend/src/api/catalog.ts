@@ -73,16 +73,25 @@ export async function fetchProducts(
   return { items: data.items.map(toProduct), total: data.total };
 }
 
-export type UsdRate = {
+export type ProductPriceUsd = {
+  priceUsd: number;
   rate: number;
-  date: string;
+  rateDate: string;
 };
 
-export async function fetchUsdRate(): Promise<UsdRate> {
-  const data = await request<{ rate: string; date: string }>(
-    "/currency/usd-rate",
-  );
-  return { rate: Number(data.rate), date: data.date };
+export async function fetchProductPriceUsd(
+  productId: string,
+): Promise<ProductPriceUsd> {
+  const data = await request<{
+    price_usd: string;
+    rate: string;
+    rate_date: string;
+  }>(`/products/${productId}/price-usd`);
+  return {
+    priceUsd: Number(data.price_usd),
+    rate: Number(data.rate),
+    rateDate: data.rate_date,
+  };
 }
 
 export type ProductInput = {

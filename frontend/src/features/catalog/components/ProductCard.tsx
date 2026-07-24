@@ -61,7 +61,7 @@ export function ProductCard({ product, onEdit, onDelete }: Props) {
         )}
 
         <div className={styles.footer}>
-          <PriceTag price={product.price} />
+          <PriceTag productId={product.id} price={product.price} />
         </div>
       </div>
     </article>
