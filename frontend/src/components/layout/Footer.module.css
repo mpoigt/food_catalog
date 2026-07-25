@@ -1,0 +1,21 @@
+.footer {
+  margin-top: var(--space-12);
+  background: var(--blue-card);
+}
+
+.inner {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4);
+  text-align: center;
+}
+
+.text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--brown);
+}
+
+.heart {
+  color: var(--pink);
+}

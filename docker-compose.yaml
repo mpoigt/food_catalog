@@ -1,0 +1,58 @@
+services:
+  auth:
+    build: ./
+    env_file: .env
+    environment:
+      DB_URL: postgresql+asyncpg://postgres:postgres@db:5432/auth_db
+      HOST: redis
+      APP_HOST: 0.0.0.0
+      APP_PORT: "8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+      - auth_media:/app/media
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  frontend:
+    build: ./frontend
+    environment:
+      API_TARGET: http://auth:8000
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - auth
+
+  db:
+    image: postgres:17
+    container_name: auth-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: auth_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - auth_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d auth_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7
+    container_name: auth-redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  auth_pgdata:
+  auth_media:

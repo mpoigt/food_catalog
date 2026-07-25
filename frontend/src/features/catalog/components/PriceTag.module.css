@@ -1,0 +1,37 @@
+.price {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--brown);
+  white-space: nowrap;
+}
+
+.star {
+  position: relative;
+  margin-left: 1px;
+  color: var(--pink);
+  cursor: help;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 150%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--brown);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 3;
+}
+
+.star:hover .tooltip {
+  opacity: 1;
+}

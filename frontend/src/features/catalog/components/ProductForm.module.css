@@ -1,0 +1,25 @@
+.file {
+  width: 100%;
+  font-family: var(--font-button);
+  font-size: 0.9rem;
+  color: var(--brown-soft);
+}
+
+.file::file-selector-button {
+  margin-right: var(--space-3);
+  padding: 8px 14px;
+  font-family: var(--font-button);
+  font-size: 0.85rem;
+  color: var(--brown);
+  background: var(--blue-card);
+  border: none;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
