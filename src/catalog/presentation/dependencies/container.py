@@ -20,6 +20,7 @@ from catalog.application.use_cases.product.upload_product_image import (
 )
 from catalog.infrastructure.config.settings import MediaSettings
 from catalog.infrastructure.db.uow.uow import CatalogUnitOfWork
+from catalog.infrastructure.services.cache import RedisCacheService
 from catalog.infrastructure.services.currency import NBRBCurrencyService
 from catalog.infrastructure.services.file_storage import LocalFileStorage
 from core.config.settings import RedisSettings
@@ -48,7 +49,8 @@ class CatalogContainer(containers.DeclarativeContainer):
     )
 
     uow = providers.Factory(CatalogUnitOfWork, session_factory=session_factory)
-    currency_service = providers.Factory(NBRBCurrencyService, redis=redis_client)
+    cache_service = providers.Factory(RedisCacheService, redis=redis_client)
+    currency_service = providers.Factory(NBRBCurrencyService, cache=cache_service)
 
     create_category_use_case = providers.Factory(CreateCategoryUseCase, uow=uow)
     update_category_use_case = providers.Factory(UpdateCategoryUseCase, uow=uow)

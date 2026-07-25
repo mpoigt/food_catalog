@@ -350,3 +350,40 @@ async def test_upload_product_image_commit_failure_deletes_orphan_file():
 
     assert len(storage.saved) == 1
     assert storage.deleted == storage.saved
+
+
+class _FakeCache:
+    def __init__(self):
+        self.store: dict[str, str] = {}
+        self.set_calls = 0
+
+    async def get(self, key):
+        return self.store.get(key)
+
+    async def set(self, key, value, ttl_seconds):
+        self.store[key] = value
+        self.set_calls += 1
+
+
+async def test_currency_service_fetches_on_miss_then_serves_from_cache(monkeypatch):
+    from catalog.infrastructure.services.currency import NBRBCurrencyService
+
+    fetches = 0
+
+    async def fake_fetch():
+        nonlocal fetches
+        fetches += 1
+        return UsdRate(rate=Decimal("3.10"), date="2026-07-24")
+
+    monkeypatch.setattr(NBRBCurrencyService, "_fetch_rate", staticmethod(fake_fetch))
+
+    cache = _FakeCache()
+    service = NBRBCurrencyService(cache)
+
+    first = await service.get_usd_rate()
+    second = await service.get_usd_rate()
+
+    assert first.rate == Decimal("3.10")
+    assert second.rate == Decimal("3.10")
+    assert fetches == 1
+    assert cache.set_calls == 1
